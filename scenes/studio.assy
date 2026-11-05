@@ -1,0 +1,75 @@
+# A studio of 18 m2 whose seating area is separated from its sleeping area by a
+# KALLAX shelving unit, after IKEA's "Decorating a small room" (ikea.com, nl/en:
+# https://www.ikea.com/nl/en/ideas/decorating-a-small-room-pub1a05ea50/) - "The
+# seating area is separated from the sleeping area by a KALLAX shelf unit" - with
+# a sofa near a HEMNES glass-door cabinet, and a desk under a SKÅDIS pegboard.
+#
+# The room is 5.8 x 3.6 m less a bathroom block in its back left corner (see
+# floorplans/studio.dxf), X to the right and Y to the back wall. Every product
+# stands with the middle of its back edge where it is placed, and faces -Y
+# turned by its angle: 0 faces the room from the back wall, 180 from the front
+# wall, 90 from the left wall and -90 from the right one.
+#
+# Two POÄNG armchairs take the place of the page's sofas, and a KALLAX desk
+# that of its MICKE: none of those is drawn by a model the collections can
+# fetch without a sign-in (see the README).
+#
+# A link's name is what the plan calls the product it places, in letters the
+# plan's font has: POANG for POÄNG, SKADIS for SKÅDIS.
+links:
+  - scene: //pub/universe/ikea:studio-walls
+    name: walls
+  - part: //pub/universe/ikea:studio-floor
+    name: floor
+    params: {color: "//pub/universe/ikea:oak-floor"}
+
+  # The room divider: from the back wall into the room, open to both sides.
+  - part: //pub/universe/ikea/products/storage-furniture/bookcases-shelving-units:kallax-shelving-unit-147x147
+    name: KALLAX room divider
+    location: [[3300, 2865, 0], [0, 0, 1], 90]
+    params: {color: "//pub/universe/ikea:white", sourceCmf: drop}
+
+  # The sleeping area, right of the divider.
+  - part: //pub/universe/ikea/products/beds-mattresses/beds:malm-bed-frame-high-160x200
+    name: MALM bed 160x200
+    location: [[4745, 3600, 0], [0, 0, 1], 0]
+    params: {color: "//pub/universe/ikea:grey-stained", sourceCmf: drop}
+  - part: //pub/universe/ikea/products/desks-desk-chairs/desks-computer-desks:kallax-desk-111x39
+    name: KALLAX desk
+    location: [[4745, 0, 0], [0, 0, 1], 180]
+    params: {color: "//pub/universe/ikea:white", sourceCmf: drop}
+  - part: //pub/universe/ikea/products/small-storage-organisers/hooks-wall-organisation:skadis-pegboard-56x56
+    name: SKADIS pegboard
+    location: [[4745, 0, 1000], [0, 0, 1], 180]
+    params: {color: "//pub/universe/ikea:white", sourceCmf: drop}
+
+  # The seating area, left of it.
+  - part: //pub/universe/ikea/products/storage-furniture/tv-media-furniture:lack-tv-bench-160x35x36
+    name: LACK TV bench
+    location: [[1700, 0, 0], [0, 0, 1], 180]
+    params: {color: "//pub/universe/ikea:white", sourceCmf: drop}
+  - part: //pub/universe/ikea/products/tables-chairs/coffee-side-tables:lack-coffee-table-90x55
+    name: LACK coffee table
+    location: [[1700, 1350, 0], [0, 0, 1], 0]
+    params: {color: "//pub/universe/ikea:white-stained-oak-effect", sourceCmf: drop}
+  - part: //pub/universe/ikea/products/tables-chairs/armchairs:poang-armchair
+    name: POANG armchair, left
+    location: [[1000, 2450, 0], [0, 0, 1], 0]
+    params: {color: "//pub/universe/ikea:birch-veneer", sourceCmf: drop}
+  - part: //pub/universe/ikea/products/tables-chairs/coffee-side-tables:lack-side-table-55x55
+    name: LACK side table
+    location: [[1700, 2450, 0], [0, 0, 1], 0]
+    params: {color: "//pub/universe/ikea:white", sourceCmf: drop}
+  - part: //pub/universe/ikea/products/tables-chairs/armchairs:poang-armchair
+    name: POANG armchair, right
+    location: [[2400, 2450, 0], [0, 0, 1], 0]
+    params: {color: "//pub/universe/ikea:birch-veneer", sourceCmf: drop}
+  - part: //pub/universe/ikea/products/storage-furniture/bookcases-shelving-units:hemnes-glass-door-cabinet-with-3-drawers-90x197
+    name: HEMNES glass-door cabinet
+    location: [[0, 1300, 0], [0, 0, 1], 90]
+    params: {color: "//pub/universe/ikea:white-stain", sourceCmf: drop}
+  # In the alcove beside the bathroom block.
+  - part: //pub/universe/ikea/products/storage-furniture/bookcases-shelving-units:billy-bookcase-80x28x202
+    name: BILLY bookcase
+    location: [[1200, 3100, 0], [0, 0, 1], 90]
+    params: {color: "//pub/universe/ikea:white", sourceCmf: drop}

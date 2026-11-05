@@ -1,0 +1,11 @@
+# The links 'pc render --filter' keeps for the plan of the student-room: everything but
+# its walls, whose top edges are the floor's outline anyway and whose names
+# ('wall-1', ...) say nothing in a callout. See tools/render_readme.sh.
+"floor":
+"KALLAX 147x147":
+"MALM bed 160x200":
+"KALLAX desk":
+"SKADIS pegboard":
+"LACK side table":
+"POANG armchair":
+"BILLY bookcase":

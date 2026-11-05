@@ -1,0 +1,20 @@
+partcad-repo-ikea
+=================
+
+This PartCAD package serves IKEA products as PartCAD parts, each an alias of a
+model of it in one of PartCAD's model-site collections.
+
+The code in this repository (the `ikea_repo.py` repository plugin, the PartCAD
+configuration, the catalog, the sample rooms, the tools and the tests), the
+floor plans, the floor texture and the rendered pictures are:
+
+    Copyright 2026 PartCAD
+    Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+No model is included in this repository. Models, their metadata and their files
+are fetched on demand from the model sites by PartCAD's collections of them,
+and remain under their own terms and licences, as each model states them.
+
+IKEA, and the names of its products, are trademarks of Inter IKEA Systems B.V.
+This package is not affiliated with or endorsed by IKEA, nor by Printables,
+MakerWorld, GrabCAD, Thingiverse or Cults3D.

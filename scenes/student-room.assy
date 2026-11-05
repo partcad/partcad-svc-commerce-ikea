@@ -1,0 +1,56 @@
+# A student room of 10.8 m2 after IKEA's "How to furnish a small student room"
+# (ikea.com, nl/en: https://www.ikea.com/nl/en/ideas/furnish-small-student-room-pub6cb73390/):
+# a KALLAX shelving unit of 147x147 cm "by the head end of a bed", a KALLAX desk
+# "by the foot end of a bed", SKÅDIS on the wall, and a reading corner.
+#
+# The room is 3.0 x 3.6 m (see floorplans/student-room.dxf), X to the right and
+# Y to the back wall. Every product stands with the middle of its back edge
+# where it is placed, and faces -Y turned by its angle: 0 faces the room from
+# the back wall, 180 from the front wall, 90 from the left wall.
+#
+# The page's bed is a BRIMNES 140x200 and its chair a LOBERGET; neither is drawn
+# by a model in the collections, so a MALM 160x200 stands in for the bed and a
+# POÄNG for the chair (see the README).
+#
+# A link's name is what the plan calls the product it places, in letters the
+# plan's font has: POANG for POÄNG, SKADIS for SKÅDIS.
+links:
+  - scene: //pub/universe/ikea:student-room-walls
+    name: walls
+  - part: //pub/universe/ikea:student-room-floor
+    name: floor
+    params: {color: "//pub/universe/ikea:oak-floor"}
+
+  # At the head end of the bed, against the back wall.
+  - part: //pub/universe/ikea/products/storage-furniture/bookcases-shelving-units:kallax-shelving-unit-147x147
+    name: KALLAX 147x147
+    location: [[2130, 3600, 0], [0, 0, 1], 0]
+    params: {color: "//pub/universe/ikea:white", sourceCmf: drop}
+  - part: //pub/universe/ikea/products/beds-mattresses/beds:malm-bed-frame-high-160x200
+    name: MALM bed 160x200
+    location: [[2130, 3210, 0], [0, 0, 1], 0]
+    params: {color: "//pub/universe/ikea:grey-stained", sourceCmf: drop}
+
+  # At its foot end, against the front wall.
+  - part: //pub/universe/ikea/products/desks-desk-chairs/desks-computer-desks:kallax-desk-111x39
+    name: KALLAX desk
+    location: [[2130, 0, 0], [0, 0, 1], 180]
+    params: {color: "//pub/universe/ikea:white", sourceCmf: drop}
+  - part: //pub/universe/ikea/products/small-storage-organisers/hooks-wall-organisation:skadis-pegboard-56x56
+    name: SKADIS pegboard
+    location: [[2130, 0, 1000], [0, 0, 1], 180]
+    params: {color: "//pub/universe/ikea:white", sourceCmf: drop}
+
+  # The reading corner, along the left wall.
+  - part: //pub/universe/ikea/products/tables-chairs/coffee-side-tables:lack-side-table-55x55
+    name: LACK side table
+    location: [[0, 700, 0], [0, 0, 1], 90]
+    params: {color: "//pub/universe/ikea:white", sourceCmf: drop}
+  - part: //pub/universe/ikea/products/tables-chairs/armchairs:poang-armchair
+    name: POANG armchair
+    location: [[0, 1400, 0], [0, 0, 1], 90]
+    params: {color: "//pub/universe/ikea:birch-veneer", sourceCmf: drop}
+  - part: //pub/universe/ikea/products/storage-furniture/bookcases-shelving-units:billy-bookcase-80x28x202
+    name: BILLY bookcase
+    location: [[0, 2700, 0], [0, 0, 1], 90]
+    params: {color: "//pub/universe/ikea:white", sourceCmf: drop}

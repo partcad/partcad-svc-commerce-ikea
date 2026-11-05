@@ -1,0 +1,721 @@
+# The IKEA products this package serves, and the models they are drawn with.
+#
+# A product is listed here only when a model of it can be found in one of
+# PartCAD's model-site collections, //pub/collection/<site>: that is the whole
+# rule of this catalog. Each product is served by ikea_repo.py as a part of
+# type 'alias' of one of its models - the first one whose site is in the
+# plugin's 'sources' - in the IKEA category package it belongs to.
+#
+# What IKEA says about a product (its name, type, size, colour, article number
+# and page) is from ikea.com's own product search, for the Netherlands in
+# English (nl/en): metric, in English, and in European bed sizes.
+# tools/check_catalog.py asks IKEA and the model sites again and says what no
+# longer agrees.
+#
+# Every model is placed the same way, so that a scene can put a product against
+# a wall without knowing whose model it is: millimetres, Z up, the width along
+# X, the middle of its back edge at the origin on the floor, and its front
+# facing -Y. A model drawn otherwise - lying on its back to be 3D-printed,
+# upside down, in metres, or a scale model - is brought there by the alias's
+# 'offset' (a rotation about the origin, then a translation, in the model's own
+# units) and 'scale' (applied after it), as PartCAD applies them to any
+# reference. tools/fit_offset.py works the offset out from the model's bounding
+# box. A model whose geometry could not be fetched to be measured - a GrabCAD
+# file needs a GrabCAD sign-in - is served as its designer drew it, and says so
+# ('placed: as-drawn').
+#
+# A model entry:
+#
+#   site:    the collection: printables, makerworld, grabcad, thingiverse or cults3d
+#   model:   the model's number (its slug on GrabCAD), as in the site's URL
+#   file:    which of its files, as the collection's plugin names one ('file=')
+#   title, author, license: as the site states them
+#   scale, offset: as above
+#   placed:  'measured' (its geometry was fetched and fitted to the convention)
+#            or 'as-drawn' (only its file list was seen)
+#   note:    anything a user should know about how true to the product it is
+
+# IKEA's own categories, in the order ikea.com shows them, each with the key
+# ikea.com knows it by. A product is in the category whose path it names.
+categories:
+  storage-furniture:
+    ikea: st001
+    name: Storage furniture
+  storage-furniture/bookcases-shelving-units:
+    ikea: st002
+    name: Bookcases & shelving units
+  storage-furniture/tv-media-furniture:
+    ikea: "10475"
+    name: TV & media furniture
+  storage-furniture/storage-solution-systems:
+    ikea: "46052"
+    name: Storage solution systems
+  beds-mattresses:
+    ikea: bm001
+    name: Beds & mattresses
+  beds-mattresses/beds:
+    ikea: bm003
+    name: Beds
+  sofas-armchairs-footstools:
+    ikea: "700640"
+    name: Sofas, armchairs & footstools
+  sofas-armchairs-footstools/sofas:
+    ikea: fu003
+    name: Sofas
+  tables-chairs:
+    ikea: fu002
+    name: Tables & chairs
+  tables-chairs/coffee-side-tables:
+    ikea: "10705"
+    name: Coffee & side tables
+  tables-chairs/armchairs:
+    ikea: fu006
+    name: Armchairs
+  tables-chairs/childrens-chairs:
+    ikea: bc004
+    name: Children's chairs
+  desks-desk-chairs:
+    ikea: fu004
+    name: Desk & desk chairs
+  desks-desk-chairs/desks-computer-desks:
+    ikea: "20649"
+    name: Desks & computer desks
+  baby-children:
+    ikea: bc001
+    name: Baby & children
+  baby-children/toy-storage:
+    ikea: "20474"
+    name: Toy boxes
+  small-storage-organisers:
+    ikea: st007
+    name: Small storage & organisers
+  small-storage-organisers/hooks-wall-organisation:
+    ikea: st006
+    name: Hooks & wall organisation
+  lighting:
+    ikea: li001
+    name: Lighting
+  lighting/lamps:
+    ikea: li002
+    name: Lamps
+
+products:
+  # -- Storage furniture / Bookcases & shelving units --------------------------
+
+  kallax-shelving-unit-77x41:
+    category: storage-furniture/bookcases-shelving-units
+    ikea: &kallax
+      name: KALLAX
+      type: Shelving unit
+      size: 77x41 cm
+      colour: white
+      article: "90301555"
+      url: https://www.ikea.com/nl/en/p/kallax-shelving-unit-white-90301555/
+    size: [770, 390, 420]
+    keywords: [cube, cubby, bookshelf, expedit, room divider]
+    models:
+      - site: printables
+        model: "1787571"
+        file: "7454424"
+        title: Ikea KALLAX model 1:25 scale
+        author: Wondrej
+        license: CC0 1.0
+        scale: 25
+        offset: [[-20.3, 0, 56.4], [0.57735, -0.57735, 0.57735], 120]
+        placed: measured
+        note: A 1:25 interior-design miniature, lying on its back to be printed.
+
+  kallax-shelving-unit-77x77:
+    category: storage-furniture/bookcases-shelving-units
+    ikea:
+      <<: *kallax
+      size: 77x77 cm
+      article: "20275814"
+      url: https://www.ikea.com/nl/en/p/kallax-shelving-unit-white-20275814/
+    size: [770, 390, 770]
+    keywords: [cube, cubby, bookshelf, expedit, room divider]
+    models:
+      - site: printables
+        model: "1297716"
+        file: "5438266"
+        title: Model furniture (Ikea)
+        author: Klonan
+        license: CC0 1.0
+        scale: 1
+        offset: [[0, 0, 385], [1, 0, 0], 90]
+        placed: measured
+        note: A full-size block model, with its cells but without their 1.5 cm bevels.
+      - site: printables
+        model: "1787571"
+        file: "7454421"
+        title: Ikea KALLAX model 1:25 scale
+        author: Wondrej
+        license: CC0 1.0
+        scale: 25
+        offset: [[20.3, 0, 35.6], [1, 0, 0], 90]
+        placed: measured
+      - site: grabcad
+        model: ikea-kallax-2
+        file: KALLAX_2x2.stl
+        title: IKEA KALLAX
+        author: Emin Güzel
+        placed: as-drawn
+
+  kallax-shelving-unit-42x147:
+    category: storage-furniture/bookcases-shelving-units
+    ikea:
+      <<: *kallax
+      size: 42x147 cm
+      article: "00275848"
+      url: https://www.ikea.com/nl/en/p/kallax-shelving-unit-white-00275848/
+    size: [420, 390, 1470]
+    keywords: [cube, cubby, bookshelf, expedit, room divider]
+    models:
+      - site: printables
+        model: "1787571"
+        file: "7454426"
+        title: Ikea KALLAX model 1:25 scale
+        author: Wondrej
+        license: CC0 1.0
+        scale: 25
+        offset: [[163.3, 0, 0], [1, 0, 0], 90]
+        placed: measured
+
+  kallax-shelving-unit-77x147:
+    category: storage-furniture/bookcases-shelving-units
+    ikea:
+      <<: *kallax
+      size: 77x147 cm
+      article: "80275887"
+      url: https://www.ikea.com/nl/en/p/kallax-shelving-unit-white-80275887/
+    size: [770, 390, 1470]
+    keywords: [cube, cubby, bookshelf, expedit, room divider]
+    models:
+      - site: printables
+        model: "1787571"
+        file: "7454422"
+        title: Ikea KALLAX model 1:25 scale
+        author: Wondrej
+        license: CC0 1.0
+        scale: 25
+        offset: [[85.3, 0, 0], [1, 0, 0], 90]
+        placed: measured
+
+  kallax-shelving-unit-112x147:
+    category: storage-furniture/bookcases-shelving-units
+    ikea:
+      <<: *kallax
+      size: 112x147 cm
+      article: "10409932"
+      url: https://www.ikea.com/nl/en/p/kallax-shelving-unit-white-10409932/
+    size: [1120, 390, 1470]
+    keywords: [cube, cubby, bookshelf, expedit, room divider]
+    models:
+      - site: printables
+        model: "1787571"
+        file: "7454423"
+        title: Ikea KALLAX model 1:25 scale
+        author: Wondrej
+        license: CC0 1.0
+        scale: 25
+        offset: [[127.3, 0, 0], [1, 0, 0], 90]
+        placed: measured
+
+  kallax-shelving-unit-147x147:
+    category: storage-furniture/bookcases-shelving-units
+    ikea:
+      <<: *kallax
+      size: 147x147 cm
+      article: "30275861"
+      url: https://www.ikea.com/nl/en/p/kallax-shelving-unit-white-30275861/
+    size: [1470, 390, 1470]
+    keywords: [cube, cubby, bookshelf, expedit, room divider]
+    models:
+      - site: printables
+        model: "1787571"
+        file: "7454419"
+        title: Ikea KALLAX model 1:25 scale
+        author: Wondrej
+        license: CC0 1.0
+        scale: 25
+        offset: [[34.4, 0, 0], [1, 0, 0], 90]
+        placed: measured
+      - site: grabcad
+        model: ikea-kallax-2
+        file: KALLAX_4x4.stl
+        title: IKEA KALLAX
+        author: Emin Güzel
+        placed: as-drawn
+
+  kallax-shelving-unit-182x182:
+    category: storage-furniture/bookcases-shelving-units
+    ikea:
+      <<: *kallax
+      size: 182x182 cm
+      colour: black-brown
+      article: "70301542"
+      url: https://www.ikea.com/nl/en/p/kallax-shelving-unit-black-brown-70301542/
+    size: [1820, 390, 1820]
+    keywords: [cube, cubby, bookshelf, expedit, room divider]
+    models:
+      - site: printables
+        model: "1787571"
+        file: "7454428"
+        title: Ikea KALLAX model 1:25 scale
+        author: Wondrej
+        license: CC0 1.0
+        scale: 25
+        offset: [[-36.4, 0, 0], [1, 0, 0], 90]
+        placed: measured
+      - site: grabcad
+        model: ikea-kallax-2
+        file: KALLAX_5x5.stl
+        title: IKEA KALLAX
+        author: Emin Güzel
+        placed: as-drawn
+
+  lack-wall-shelf-unit-30x190:
+    category: storage-furniture/bookcases-shelving-units
+    ikea:
+      name: LACK
+      type: Wall shelf unit
+      size: 30x190 cm
+      colour: white
+      article: "60282186"
+      url: https://www.ikea.com/nl/en/p/lack-wall-shelf-unit-white-60282186/
+    size: [300, 280, 1900]
+    keywords: [bookshelf, wall shelf]
+    models:
+      - site: printables
+        model: "1787409"
+        file: "7453330"
+        title: Ikea LACK model 1:25 scale
+        author: Wondrej
+        license: CC0 1.0
+        scale: 25
+        offset: [[6, 0, 76], [0.57735, -0.57735, 0.57735], 120]
+        placed: measured
+        note: A 1:25 interior-design miniature, lying on its side to be printed; stands on the floor here.
+
+  billy-bookcase-80x28x202:
+    category: storage-furniture/bookcases-shelving-units
+    ikea:
+      name: BILLY
+      type: Bookcase
+      size: 80x28x202 cm
+      colour: white
+      article: "00263850"
+      url: https://www.ikea.com/nl/en/p/billy-bookcase-white-00263850/
+    size: [800, 280, 2020]
+    keywords: [bookshelf, shelves]
+    models:
+      - site: printables
+        model: "1335419"
+        file: "5616367"
+        title: IKEA BILLY Bookcase 1:12 Scale Model
+        license: CC BY 4.0
+        scale: 12
+        offset: [[-5.385, 0, 84.33], [1, 0, 0], 90]
+        placed: measured
+        note: A 1:12 dollhouse model, lying on its back to be printed.
+
+  hemnes-glass-door-cabinet-with-3-drawers-90x197:
+    category: storage-furniture/bookcases-shelving-units
+    ikea:
+      name: HEMNES
+      type: Glass-door cabinet with 3 drawers
+      size: 90x197 cm
+      colour: white stain/light brown
+      article: "50413507"
+      url: https://www.ikea.com/nl/en/p/hemnes-glass-door-cabinet-with-3-drawers-white-stain-light-brown-50413507/
+    size: [900, 370, 1970]
+    keywords: [display cabinet, vitrine, bookcase, china cabinet]
+    models:
+      - site: printables
+        model: "34773"
+        file: "142073"
+        title: IKEA HEMNES Glass-door cabinet with 3 drawers.
+        license: CC BY 4.0
+        scale: 1
+        offset: [[11.6556, -224.0132, 1945], [0, 0, 1], 0]
+        placed: measured
+        note: Full size, in millimetres.
+
+  # -- Storage furniture / TV & media furniture -------------------------------
+
+  kallax-tv-bench-147x60:
+    category: storage-furniture/tv-media-furniture
+    ikea:
+      <<: *kallax
+      type: TV bench
+      size: 147x60 cm
+      article: "70562087"
+      url: https://www.ikea.com/nl/en/p/kallax-tv-bench-white-70562087/
+    size: [1470, 390, 600]
+    keywords: [tv unit, media unit, sideboard]
+    models:
+      - site: printables
+        model: "1787571"
+        file: "7454417"
+        title: Ikea KALLAX model 1:25 scale
+        author: Wondrej
+        license: CC0 1.0
+        scale: 25
+        offset: [[-34.3, 0, 28.8], [1, 0, 0], 90]
+        placed: measured
+
+  lack-tv-bench-160x35x36:
+    category: storage-furniture/tv-media-furniture
+    ikea: &lack-tv
+      name: LACK
+      type: TV bench
+      size: 160x35x36 cm
+      colour: white
+      article: "30498927"
+      url: https://www.ikea.com/nl/en/p/lack-tv-bench-white-30498927/
+    size: [1600, 350, 360]
+    keywords: [tv unit, media unit]
+    models:
+      - site: printables
+        model: "1787409"
+        file: "7453329"
+        title: Ikea LACK model 1:25 scale
+        author: Wondrej
+        license: CC0 1.0
+        scale: 25
+        offset: [[0, -14.3812, 0], [0, 0, 1], 0]
+        placed: measured
+
+  lack-tv-bench-120x35x36:
+    category: storage-furniture/tv-media-furniture
+    ikea:
+      <<: *lack-tv
+      size: 120x35x36 cm
+      article: "30498890"
+      url: https://www.ikea.com/nl/en/p/lack-tv-bench-white-30498890/
+    size: [1200, 350, 360]
+    keywords: [tv unit, media unit]
+    models:
+      - site: printables
+        model: "1787409"
+        file: "7453327"
+        title: Ikea LACK model 1:25 scale
+        author: Wondrej
+        license: CC0 1.0
+        scale: 25
+        offset: [[0, -14.4, 0], [0, 0, 1], 0]
+        placed: measured
+
+  # -- Storage furniture / Storage solution systems ---------------------------
+
+  pax-wardrobe-frame-100x58x201:
+    category: storage-furniture/storage-solution-systems
+    ikea:
+      name: PAX
+      type: Wardrobe frame
+      size: 100x58x201 cm
+      colour: white
+      article: "70458203"
+      url: https://www.ikea.com/nl/en/p/pax-wardrobe-frame-white-70458203/
+    size: [1000, 580, 2010]
+    keywords: [wardrobe, closet, armoire]
+    models:
+      - site: grabcad
+        model: ikea-pax-100x58x201-1
+        file: Ikea Pax 100x58x201.stp
+        title: Ikea Pax 100x58x201
+        author: Gábor Götz
+        placed: as-drawn
+
+  # -- Beds & mattresses / Beds -----------------------------------------------
+
+  malm-bed-frame-high-160x200:
+    category: beds-mattresses/beds
+    ikea:
+      name: MALM
+      type: Bed frame, high
+      size: 160x200 cm
+      colour: grey stained/Luröy
+      article: S69385793
+      url: https://www.ikea.com/nl/en/p/malm-bed-frame-high-grey-stained-luroy-s69385793/
+    size: [1760, 2090, 1000]
+    keywords: [double bed, bed frame]
+    models:
+      - site: makerworld
+        model: "2240785"
+        file: preview-2439081
+        title: Mini bed - IKEA MALM 1:24
+        author: vecto3D
+        license: Standard Digital File License
+        scale: 22.6
+        offset: [[0, -46.2, 0], [0, 0, 1], -90]
+        placed: measured
+        note: >-
+          MakerWorld's own preview mesh of the model's print profile, which
+          needs no sign-in. Called 1:24, it is the bed's 209 cm length at
+          1:22.6, which is the scale it is drawn at here.
+
+  # -- Sofas, armchairs & footstools / Sofas ----------------------------------
+
+  klippan-2-seat-sofa:
+    category: sofas-armchairs-footstools/sofas
+    ikea:
+      name: KLIPPAN
+      type: 2-seat sofa
+      colour: Vissle grey
+      article: S79010614
+      url: https://www.ikea.com/nl/en/p/klippan-2-seat-sofa-vissle-grey-s79010614/
+    size: [1800, 880, 660]
+    keywords: [couch, loveseat, settee]
+    models:
+      - site: grabcad
+        model: ikea-klippan-sofa
+        file: Ikea Kipplan sofa.stp
+        title: Ikea Klippan Sofa
+        author: stewart heaysman
+        placed: as-drawn
+
+  soderhamn-3-seat-section:
+    category: sofas-armchairs-footstools/sofas
+    ikea:
+      name: SÖDERHAMN
+      type: 3-seat section
+      colour: Kelinge beige
+      article: S49621606
+      url: https://www.ikea.com/nl/en/p/soderhamn-3-seat-section-kelinge-beige-s49621606/
+    size: [1980, 990, 830]
+    keywords: [couch, modular sofa, settee]
+    models:
+      - site: grabcad
+        model: ikea-soderhamn-1
+        file: Söderhamn triple unit.stp
+        title: İkea Söderhamn
+        author: Nizamettin Kulaç
+        placed: as-drawn
+
+  # -- Tables & chairs --------------------------------------------------------
+
+  lack-side-table-55x55:
+    category: tables-chairs/coffee-side-tables
+    ikea: &lack-table
+      name: LACK
+      type: Side table
+      size: 55x55 cm
+      colour: white
+      article: "30449908"
+      url: https://www.ikea.com/nl/en/p/lack-side-table-white-30449908/
+    size: [550, 550, 450]
+    keywords: [end table, occasional table, nightstand]
+    models:
+      - site: printables
+        model: "320128"
+        file: "1426588"
+        title: IKEA Lack Side Table Model (FreeCAD)
+        author: Books
+        license: CC0 1.0
+        scale: 1
+        offset: [[-275, -550, 0], [0, 0, 1], 0]
+        placed: measured
+        note: Full size, a STEP file.
+      - site: printables
+        model: "1297716"
+        file: "5438268"
+        title: Model furniture (Ikea)
+        author: Klonan
+        license: CC0 1.0
+        scale: 1
+        offset: [[0, -275, 0], [0, 0, 1], 0]
+        placed: measured
+
+  lack-coffee-table-90x55:
+    category: tables-chairs/coffee-side-tables
+    ikea:
+      <<: *lack-table
+      type: Coffee table
+      size: 90x55 cm
+      colour: white stained oak effect
+      article: "50319029"
+      url: https://www.ikea.com/nl/en/p/lack-coffee-table-white-stained-oak-effect-50319029/
+    size: [900, 550, 450]
+    keywords: [low table, living room table]
+    models:
+      - site: printables
+        model: "1787409"
+        file: "7453332"
+        title: Ikea LACK model 1:25 scale
+        author: Wondrej
+        license: CC0 1.0
+        scale: 25
+        offset: [[18, 0, -22.0009], [0.57735, -0.57735, 0.57735], 120]
+        placed: measured
+        note: A 1:25 interior-design miniature, lying on its side to be printed.
+
+  poang-armchair:
+    category: tables-chairs/armchairs
+    ikea:
+      name: POÄNG
+      type: Armchair
+      colour: birch veneer/Knisa light beige
+      article: S39240787
+      url: https://www.ikea.com/nl/en/p/poang-armchair-birch-veneer-knisa-light-beige-s39240787/
+    size: [680, 820, 1000]
+    keywords: [chair, lounge chair, reading chair, easy chair]
+    models:
+      - site: printables
+        model: "290635"
+        file: "3118172"
+        title: IKEA Poang Chair
+        license: CC0 1.0
+        scale: 1000
+        offset: [[0, -0.4612, -0.0002], [0, 0, 1], 0]
+        placed: measured
+        note: Drawn in metres, and a little shallower than the chair (75 cm rather than 82).
+
+  mammut-childrens-stool:
+    category: tables-chairs/childrens-chairs
+    ikea:
+      name: MAMMUT
+      type: Children's stool
+      colour: in/outdoor/red
+      article: "70581991"
+      url: https://www.ikea.com/nl/en/p/mammut-childrens-stool-in-outdoor-red-70581991/
+    size: [350, 350, 300]
+    keywords: [kids stool, child seat]
+    models:
+      - site: printables
+        model: "168889"
+        file: "703654"
+        title: mammut stool IKEA
+        license: CC BY-SA 4.0
+        scale: 1
+        offset: [[0, -170.264, 0], [0, 0, 1], 0]
+        placed: measured
+
+  # -- Desk & desk chairs -----------------------------------------------------
+
+  kallax-desk-111x39:
+    category: desks-desk-chairs/desks-computer-desks
+    ikea:
+      <<: *kallax
+      type: Desk
+      size: 111x39 cm
+      article: "30582445"
+      url: https://www.ikea.com/nl/en/p/kallax-desk-white-30582445/
+    size: [1110, 390, 770]
+    keywords: [writing desk, workstation, table]
+    models:
+      - site: printables
+        model: "1787571"
+        file: "7454425"
+        title: Ikea KALLAX model 1:25 scale
+        author: Wondrej
+        license: CC0 1.0
+        scale: 25
+        offset: [[-27.2, 0, 65.8], [1, 0, 0], 90]
+        placed: measured
+
+  micke-desk-105x50:
+    category: desks-desk-chairs/desks-computer-desks
+    ikea:
+      name: MICKE
+      type: Desk
+      size: 105x50 cm
+      colour: white
+      article: "80213074"
+      url: https://www.ikea.com/nl/en/p/micke-desk-white-80213074/
+    size: [1050, 500, 750]
+    keywords: [writing desk, workstation, computer desk]
+    models:
+      - site: grabcad
+        model: micke-ikea-desk-1
+        file: MICKE assembly.STEP
+        title: MICKE Ikea desk
+        author: Jun Kiat Tan
+        placed: as-drawn
+
+  lagkapten-alex-desk-140x60:
+    category: desks-desk-chairs/desks-computer-desks
+    ikea:
+      name: LAGKAPTEN / ALEX
+      type: Desk
+      size: 140x60 cm
+      colour: white
+      article: S99431982
+      url: https://www.ikea.com/nl/en/p/lagkapten-alex-desk-white-s99431982/
+    size: [1400, 600, 730]
+    keywords: [writing desk, workstation, computer desk, drawer unit]
+    models:
+      - site: grabcad
+        model: ikea-lagkapten-desk-1
+        file: Ikea Lagkapten-Alex.stp
+        title: Ikea Lagkapten desk
+        author: Johan Langens
+        placed: as-drawn
+
+  # -- Baby & children --------------------------------------------------------
+
+  trofast-storage-combination-with-boxes-99x44x56:
+    category: baby-children/toy-storage
+    ikea:
+      name: TROFAST
+      type: Storage combination with boxes
+      size: 99x44x56 cm
+      colour: white/white
+      article: S59574459
+      url: https://www.ikea.com/nl/en/p/trofast-storage-combination-with-boxes-white-white-s59574459/
+    size: [990, 440, 560]
+    keywords: [toy storage, toy box, bins]
+    models:
+      - site: printables
+        model: "589331"
+        file: "2491110"
+        title: DOLLHOUSE IKEA TROFAST 1:12 MINIATURE
+        license: CC BY 4.0
+        scale: 12
+        offset: [[29.1131, 0, 13.8821], [1, 0, 0], 90]
+        placed: measured
+        note: A 1:12 dollhouse model of the frame, lying on its back to be printed; its boxes are separate files.
+
+  # -- Small storage & organisers ---------------------------------------------
+
+  skadis-pegboard-56x56:
+    category: small-storage-organisers/hooks-wall-organisation
+    ikea:
+      name: SKÅDIS
+      type: Pegboard
+      size: 56x56 cm
+      colour: white
+      article: "00320803"
+      url: https://www.ikea.com/nl/en/p/skadis-pegboard-white-00320803/
+    size: [560, 5, 560]
+    keywords: [pegboard, wall organiser, wall storage]
+    models:
+      - site: printables
+        model: "1601739"
+        file: "6741591"
+        title: IKEA SKADIS 56x56 Reference Model
+        author: CopyRited
+        license: CC0 1.0
+        scale: 1
+        offset: [[0, -2.5, 280], [0, 0, 1], 0]
+        placed: measured
+        note: Full size, a STEP file. Its origin is the middle of its bottom edge; hang it by placing it at a height.
+
+  # -- Lighting ---------------------------------------------------------------
+
+  tertial-work-lamp:
+    category: lighting/lamps
+    ikea:
+      name: TERTIAL
+      type: Work lamp
+      colour: dark grey
+      article: "50355395"
+      url: https://www.ikea.com/nl/en/p/tertial-work-lamp-dark-grey-50355395/
+    keywords: [desk lamp, task lamp, reading lamp]
+    models:
+      - site: grabcad
+        model: ikea-tertial-work-lamp-1
+        file: IKEA Tertial Work Lamp Final Assembly.stp
+        title: IKEA Tertial Work Lamp
+        author: Soham Phatarphod
+        placed: as-drawn

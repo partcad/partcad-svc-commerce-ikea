@@ -1,0 +1,212 @@
+# PartCAD package: IKEA products as parts, served by a repository plugin.
+#
+# Published as //pub/universe/ikea: this package is //pub/universe/ikea, its
+# external dependency 'products' is the catalog (//pub/universe/ikea/products),
+# whose child packages - served by the ikea_repo plugin - are IKEA's own
+# categories. Every product in them is a part of type 'alias' of a model of it
+# in one of the model-site collections, //pub/collection/<site>; a product no
+# collection has a model of is not here. See the README.
+name: //pub/universe/ikea
+
+desc: |
+  IKEA products as PartCAD parts, by IKEA's own categories, and sample rooms
+  furnished with them. Each product is an alias of a model of it that somebody
+  published on a model site - Printables, MakerWorld, GrabCAD, Thingiverse or
+  Cults3D - served by that site's collection in //pub/collection, and placed
+  the same way: millimetres, Z up, the middle of its back edge at the origin on
+  the floor, its front facing -Y. Only the products a model can be found of are
+  here; nothing is vendored, and nothing here is IKEA's own geometry.
+url: https://www.ikea.com/
+
+# The first PartCAD whose repository plugins search their own catalog
+# ('searchKinds'), which the model-site collections this package's parts are
+# aliases of need as well. It also reads 'walls' scenes (0.8.285) and draws
+# shaded pictures and component callouts, which the sample rooms use.
+#
+# Not yet enough for 13 products (see "Status" in the README): the 1:25 KALLAX
+# and LACK models are 3MF files that 0.9.4 cannot read, and the TROFAST one an
+# ASCII STL it does not move. Raise this to the release that fixes both.
+partcad: ">=0.9.4"
+
+# A product is bought, not made: its part names IKEA and an article number to
+# order it by, and its geometry is somebody's drawing of it.
+manufacturable: false
+
+# What the plugin needs in the sandbox it runs in: the catalog is YAML.
+pythonRequirements:
+  - PyYAML>=5.1
+
+docs:
+  name: IKEA for PartCAD
+  usage: |
+    ```shell
+    pc list packages //pub/universe/ikea/products...
+    pc list parts //pub/universe/ikea/products/storage-furniture/bookcases-shelving-units
+    pc search parts -P //pub/universe/ikea/products... -k poang
+    pc inspect //pub/universe/ikea/products/tables-chairs/armchairs:poang-armchair
+    pc render -t png //pub/universe/ikea:studio
+    ```
+
+dependencies:
+  # The public index, for //pub/collection when this package is the root -
+  # checked out on its own, as when the sample rooms are rendered. Imported
+  # from anywhere else, //pub is the importer's.
+  pub:
+    onlyInRoot: true
+    type: git
+    url: https://github.com/partcad/partcad-index.git
+    track: main
+  # The catalog. Its children, IKEA's categories, are reported by the plugin's
+  # 'deps', so this one dependency is the whole tree.
+  products:
+    type: external
+    plugin: :ikea_repo
+    desc: IKEA products by IKEA's own categories, each an alias of a model of it in //pub/collection.
+
+repositories:
+  ikea_repo:
+    type: basic
+    path: ikea_repo.py
+    desc: Serves the IKEA products of catalog.yaml, by category, as aliases of models in //pub/collection, and searches them.
+    # Yours to change without touching this package, in ~/.partcad/config.yaml,
+    # by the plugin's name:
+    #
+    #   parameters:
+    #     //pub/universe/ikea:ikea_repo:
+    #       sources: printables,makerworld
+    #
+    # or with an 'enrich' of it in a package of your own (see the README).
+    parameters:
+      sources:
+        type: string
+        default: printables,makerworld,grabcad,thingiverse,cults3d
+        desc: >-
+          The model-site collections to draw a product with, best first,
+          separated by commas: printables, makerworld, grabcad, thingiverse,
+          cults3d. A product is drawn with its model on the first of them that
+          has one, and a product none of them has a model of is not served.
+          'printables,makerworld' is the products that build without signing
+          in anywhere; a GrabCAD model needs 'pc login
+          //pub/collection/grabcad:grabcad_repo'.
+
+# The colours the sample rooms are drawn in: IKEA's names for the finishes of
+# the products in them, the walls' paint and the floor. Pictures only - nothing
+# here claims to be what IKEA uses - so none of them is manufacturable.
+colors:
+  white:
+    desc: IKEA's 'white', as KALLAX, LACK, BILLY and SKÅDIS are sold in it.
+    display: "#F2F1EC"
+    manufacturable: false
+  white-stained-oak-effect:
+    desc: IKEA's 'white stained oak effect' (LACK).
+    display: "#E4D9C5"
+    manufacturable: false
+  white-stain:
+    desc: IKEA's 'white stain' (HEMNES).
+    display: "#EAE3D5"
+    manufacturable: false
+  grey-stained:
+    desc: IKEA's 'grey stained' ash veneer (MALM).
+    display: "#8D8981"
+    manufacturable: false
+  birch-veneer:
+    desc: IKEA's 'birch veneer' (POÄNG's frame).
+    display: "#D8BB8D"
+    manufacturable: false
+  studio-wall:
+    desc: The warm greige the studio's walls are drawn in.
+    display: "#D9CFBF"
+    manufacturable: false
+  student-room-wall:
+    desc: The pale sage the student room's walls are drawn in.
+    display: "#BCC9B2"
+    manufacturable: false
+  oak-floor:
+    desc: Light oak planks, drawn by tools/draw_textures.py.
+    display:
+      image: textures/oak-floor.png
+      size: 1200
+      color: "#D2B78F"
+    manufacturable: false
+
+# The floors of the sample rooms: the plan the walls stand on, extruded 20 mm
+# down from the floor the products stand on (z = 0).
+parts:
+  studio-floor:
+    type: extrude
+    desc: The studio's floor.
+    sketch: studio-plan
+    depth: 20
+    offset: [[0, 0, -20], [0, 0, 1], 0]
+  student-room-floor:
+    type: extrude
+    desc: The student room's floor.
+    sketch: student-room-plan
+    depth: 20
+    offset: [[0, 0, -20], [0, 0, 1], 0]
+
+# The outlines the rooms stand on: tools/draw_floorplans.py writes them.
+sketches:
+  studio-plan:
+    type: dxf
+    path: floorplans/studio.dxf
+    desc: An 18 m2 studio, 5.8 x 3.6 m less a 1.2 x 1.0 m bathroom block in its back left corner.
+  student-room-plan:
+    type: dxf
+    path: floorplans/student-room.dxf
+    desc: A 10.8 m2 student room, 3.0 x 3.6 m.
+
+scenes:
+  # The walls of each room: PartCAD's own room, standing on the plan.
+  studio-walls:
+    type: enrich
+    source: //builtin/building:room
+    desc: The studio's walls, 2.6 m high.
+    with:
+      sketch: //pub/universe/ikea:studio-plan
+      height: 2600
+      color: //pub/universe/ikea:studio-wall
+  student-room-walls:
+    type: enrich
+    source: //builtin/building:room
+    desc: The student room's walls, 2.6 m high.
+    with:
+      sketch: //pub/universe/ikea:student-room-plan
+      height: 2600
+      color: //pub/universe/ikea:student-room-wall
+
+  # The rooms furnished, after IKEA's own room ideas (see the README).
+  studio:
+    type: assy
+    path: scenes/studio.assy
+    desc: |
+      A studio whose seating area is separated from its sleeping area by a
+      KALLAX shelving unit, after IKEA's "Decorating a small room" (ikea.com,
+      nl/en): a MALM bed behind the KALLAX, a KALLAX desk under a SKÅDIS
+      pegboard, two POÄNG armchairs at a LACK coffee table facing a LACK TV
+      bench, a HEMNES glass-door cabinet, and a BILLY bookcase in the alcove.
+    render:
+      png:
+        zoom: 1.25
+  student-room:
+    type: assy
+    path: scenes/student-room.assy
+    desc: |
+      A student room after IKEA's "How to furnish a small student room"
+      (ikea.com, nl/en): a large KALLAX by the head end of the bed, a KALLAX
+      desk by its foot end under a SKÅDIS pegboard, and a reading corner.
+    render:
+      png:
+        zoom: 1.25
+
+# The pictures in the README: 'pc render' writes them, from the root of this
+# package. A shaded view into each room from above its front corner, and its
+# plan from straight above with every product named.
+render:
+  png:
+    prefix: images
+    style: shaded
+    width: 1600
+    height: 1000
+  svg:
+    prefix: images

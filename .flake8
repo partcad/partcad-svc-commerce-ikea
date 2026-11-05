@@ -1,0 +1,4 @@
+[flake8]
+max-line-length = 120
+# black writes a slice with a space before its colon.
+extend-ignore = E203
