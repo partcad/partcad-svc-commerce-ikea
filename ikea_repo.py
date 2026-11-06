@@ -5,13 +5,13 @@
 #
 """A PartCAD 'basic' repository plugin that serves IKEA products as parts.
 
-Published as ``//pub/universe/ikea/products``. Its child packages are IKEA's own
+Published as ``//pub/svc/commerce/ikea/products``. Its child packages are IKEA's own
 categories, two levels deep, and the parts of a category are the IKEA products
 in it that a model can be found of in one of PartCAD's model-site collections
 (``//pub/collection/<site>``). Every product is a part of type ``alias`` of
 that model, placed the way every product of this package is placed:
 
-    //pub/universe/ikea/products/storage-furniture/bookcases-shelving-units:kallax-shelving-unit-77x147
+    //pub/svc/commerce/ikea/products/storage-furniture/bookcases-shelving-units:kallax-shelving-unit-77x147
         -> //pub/collection/printables/models:1787571;file=7454422   (scaled 25:1)
 
 What the products are, and which models they are drawn with, is the catalog
@@ -20,7 +20,7 @@ while serving: a package answers the same thing on every machine, and the model
 sites are asked by their own plugins, when a part is built.
 
 Every package that holds products searches them itself ('searchKinds'):
-``pc search parts -P //pub/universe/ikea/products... -k poang`` finds the POÄNG
+``pc search parts -P //pub/svc/commerce/ikea/products... -k poang`` finds the POÄNG
 armchair, as does ``-k 392.407.87`` (its article number) or ``-k "lounge chair"``.
 
 The plugin's one parameter, 'sources', is which model sites to draw a product
@@ -44,7 +44,8 @@ import urllib.parse
 # keys everything it caches of this package on it, so raise it with any change
 # to what is answered - here or in catalog.yaml.
 #
-# v1: IKEA products as aliases of models in //pub/collection, by category.
+# v1: IKEA products as aliases of models in //pub/collection, by category, each
+#     category supplied by the package's own IKEA store.
 CACHE_VERSION = 1
 
 CATALOG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "catalog.yaml")
@@ -62,6 +63,11 @@ DEFAULT_SOURCES = "printables,makerworld,grabcad,thingiverse,cults3d"
 
 VENDOR = "ikea"
 WEB = "https://www.ikea.com/nl/en/"
+
+# Where a product is quoted: this package's own provider, which quotes an IKEA
+# article at one IKEA store (ikea_store.py). Named by where the index puts it,
+# as a store's other products are; a PartCAD that cannot load it passes over it.
+SUPPLIERS = ("//pub/svc/commerce/ikea:ikea-store",)
 
 DEFAULT_LIMIT = 20
 
@@ -308,6 +314,7 @@ class Ikea:
         meta = {"desc": desc + ".", "manufacturable": False, "objectKinds": ["part"] if served else []}
         if served:
             meta["searchKinds"] = ["part"]
+            meta["suppliers"] = {name: {} for name in SUPPLIERS}
         return meta
 
     def search(self, category, query):

@@ -123,9 +123,11 @@ def test_a_category_with_products_lists_and_searches_them(catalog):
     assert meta["objectKinds"] == ["part"]
     assert meta["searchKinds"] == ["part"]
     assert "KALLAX" in meta["desc"] and "st002" in meta["desc"]
+    # Every product finds the package's own store.
+    assert meta["suppliers"] == {"//pub/svc/commerce/ikea:ikea-store": {}}
     # One with none under it directly lists nothing, and searches nothing.
     meta = plugin.get("storage-furniture/meta")
-    assert meta["objectKinds"] == [] and "searchKinds" not in meta
+    assert meta["objectKinds"] == [] and "searchKinds" not in meta and "suppliers" not in meta
 
 
 def test_a_product_is_an_alias_of_its_model_placed_by_the_convention(catalog):

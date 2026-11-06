@@ -1,7 +1,8 @@
 # IKEA for PartCAD
 
-IKEA products as PartCAD parts, by IKEA's own categories, published as
-`//pub/universe/ikea`, and rooms furnished with them.
+IKEA, published with the other stores as `//pub/svc/commerce/ikea`: a provider
+that quotes IKEA articles at a local IKEA store, IKEA products as PartCAD parts
+by IKEA's own categories, and rooms furnished with them.
 
 | A studio divided by a KALLAX | A student room |
 | --- | --- |
@@ -10,7 +11,9 @@ IKEA products as PartCAD parts, by IKEA's own categories, published as
 
 Both rooms are laid out after IKEA's own room ideas, furnished with this
 package's products, and stand on walls PartCAD raises from a floor plan (see
-[Sample rooms](#sample-rooms)).
+[Sample rooms](#sample-rooms)) - and both are priced at a store with one
+command: the studio's eleven products came to 912.93 EUR at IKEA Amsterdam on
+2026-11-06 (see [Quotes at a local store](#quotes-at-a-local-store)).
 
 **Every product is an alias of somebody's model of it.** A product is a part of
 type `alias` of a model in one of PartCAD's model-site collections,
@@ -30,25 +33,104 @@ at the origin on the floor, and its front facing -Y. A scene puts a product
 against a wall by putting that point on the wall.
 
 ```shell
-pc list packages //pub/universe/ikea/products...
-pc list parts //pub/universe/ikea/products/storage-furniture/bookcases-shelving-units
-pc search parts -P //pub/universe/ikea/products... -k poang
-pc inspect //pub/universe/ikea/products/tables-chairs/armchairs:poang-armchair
-pc render -t png --style shaded //pub/universe/ikea:studio
+pc list packages //pub/svc/commerce/ikea/products...
+pc list parts //pub/svc/commerce/ikea/products/storage-furniture/bookcases-shelving-units
+pc search parts -P //pub/svc/commerce/ikea/products... -k poang
+pc inspect //pub/svc/commerce/ikea/products/tables-chairs/armchairs:poang-armchair
+pc render -t png --style shaded //pub/svc/commerce/ikea:studio
+pc supply quote //pub/svc/commerce/ikea/products/tables-chairs/armchairs:poang-armchair#2
 ```
 
 Requires PartCAD 0.9.4 or newer: the first release whose repository plugins
 search their own catalog, which this one and the collections all do. See
 [Status](#status) for the two PartCAD fixes 13 of the products are still waiting for.
 
+## Quotes at a local store
+
+The provider `//pub/svc/commerce/ikea:ikea-store` quotes IKEA articles - any
+part declared with `vendor: ikea` and an IKEA article number as its `sku`,
+which every product here is - at one IKEA store: the price IKEA asks in that
+store's country, and whether that store sells it, off its shelf or ordered at
+its desk. Every product's category names it as its supplier, so a product, a
+scene or an assembly made of them is quoted there without saying so:
+
+```text
+$ pc supply quote //pub/svc/commerce/ikea/products/tables-chairs/armchairs:poang-armchair#2
+INFO: The following quotes are received:
+INFO:     //pub/svc/commerce/ikea:ikea-store: None: 138.00 EUR
+INFO:         //pub/svc/commerce/ikea/products/tables-chairs/armchairs:poang-armchair#2
+
+$ pc supply quote //pub/svc/commerce/ikea:studio
+INFO:     //pub/svc/commerce/ikea:ikea-store: None: 912.93 EUR
+INFO:         ... the eleven products of the studio
+INFO: No provider found:
+INFO:         //builtin/building:wall#1  ... and the floor
+```
+
+A room's walls and floor are nobody's to sell, so they are listed apart, and the
+command ends with an error status for them; the quote is the furniture's.
+`pc supply quote --json` adds what each line was quoted on: the article, what
+IKEA calls it, how many, the price of one and of all, and the store's stock in
+its words ("in stock", "only a few left", "ordered in the store").
+
+**Which store.** IKEA Amsterdam (`088`) unless you say otherwise, by its number
+or by a word of its name; a name that is not one store's is answered with the
+stores there are:
+
+```shell
+pc --extra-param //pub/svc/commerce/ikea:ikea-store.store=Utrecht supply quote ...
+```
+
+```yaml
+# ~/.partcad/config.yaml, for every quote
+parameters:
+  //pub/svc/commerce/ikea:ikea-store:
+    store: Utrecht
+```
+
+| Parameter | Default | What it is |
+| --- | --- | --- |
+| `country` | `nl` | The store's country, as ikea.com spells it (`ikea.com/<country>/<language>/`): it decides the stores there are, the prices and their currency. |
+| `language` | `en` | The language of the site the store is asked through: the names of things, not their prices. |
+| `store` | `088` | The store, by its number on ikea.com or a word of its name. |
+| `currency` | `EUR` | What the country prices in, which PartCAD takes the quote to be in; a quote in another is refused, saying which to set. |
+
+A store in another country is an `enrich` of the provider:
+
+```yaml
+providers:
+  ikea-berlin:
+    type: enrich
+    source: //pub/svc/commerce/ikea:ikea-store
+    with: {country: de, language: de, store: "324"}   # IKEA Berlin-Lichtenberg
+```
+
+**Where the answers come from.** IKEA publishes no API for prices or stock.
+What answers both is ikea.com's own product search, asked for the article number
+at the store - what the website's search page asks, without a key - and the list
+of a country's stores the website reads. The provider says what it is in its
+User-Agent, keeps every answer for an hour (and the stores for a day) under
+`~/.cache/partcad-ikea/` (`$PARTCAD_IKEA_CACHE`), and asks nothing else. IKEA
+says how much a store has in words rather than numbers, so a store that has
+some is taken to have as many as are asked for. A country that sells an article
+under another number than this catalog's (Dutch) one - the United States and
+Canada - does not find it, and says so. Nothing is put in a basket at ikea.com,
+so a quote has no cart ID, and ordering is not implemented. Using ikea.com is
+subject to IKEA's terms of use.
+
+Run against ikea.com on 2026-11-06: the Dutch and German store lists; prices and
+stock at IKEA Amsterdam, IKEA Utrecht and IKEA Berlin-Lichtenberg, plain
+articles and combinations (`S...`) alike; and both rooms quoted end to end with
+PartCAD.
+
 ## Categories
 
-The packages under `//pub/universe/ikea/products` are IKEA's own categories,
+The packages under `//pub/svc/commerce/ikea/products` are IKEA's own categories,
 named as ikea.com names them and keyed to its own keys (the `ikea:` of each in
 `catalog.yaml`). A category is listed only while it holds a product:
 
 ```text
-//pub/universe/ikea/products
+//pub/svc/commerce/ikea/products
 ├── storage-furniture                    st001
 │   ├── bookcases-shelving-units         st002   KALLAX, LACK, BILLY, HEMNES
 │   ├── tv-media-furniture               10475   KALLAX, LACK
@@ -78,8 +160,8 @@ says what IKEA calls it, in which colour, by which article number, and whose
 model it is drawn with:
 
 ```text
-$ pc list parts //pub/universe/ikea/products/tables-chairs/armchairs
-//pub/universe/ikea/products/tables-chairs/armchairs  poang-armchair  IKEA POÄNG Armchair, birch veneer/Knisa
+$ pc list parts //pub/svc/commerce/ikea/products/tables-chairs/armchairs
+//pub/svc/commerce/ikea/products/tables-chairs/armchairs  poang-armchair  IKEA POÄNG Armchair, birch veneer/Knisa
     light beige (S392.407.87). Drawn with 'IKEA Poang Chair' on Printables (CC0 1.0), scaled 1000:1.
 ```
 
@@ -129,10 +211,10 @@ Every category that holds products searches them itself (`searchKinds`), so ask
 it of the whole tree with `...`:
 
 ```shell
-pc search parts -P //pub/universe/ikea/products... -k poang          # POÄNG, without its diacritics
-pc search parts -P //pub/universe/ikea/products... -k 302.758.61     # an article number, with or without its dots
-pc search parts -P //pub/universe/ikea/products... -k "kallax 147"   # every word has to be found
-pc search parts -P //pub/universe/ikea/products... -k couch          # finds the sofas: another word for them
+pc search parts -P //pub/svc/commerce/ikea/products... -k poang          # POÄNG, without its diacritics
+pc search parts -P //pub/svc/commerce/ikea/products... -k 302.758.61     # an article number, with or without its dots
+pc search parts -P //pub/svc/commerce/ikea/products... -k "kallax 147"   # every word has to be found
+pc search parts -P //pub/svc/commerce/ikea/products... -k couch          # finds the sofas: another word for them
 ```
 
 A search compares words, in lower case and without diacritics: the part's name,
@@ -160,7 +242,7 @@ Set it in your own `~/.partcad/config.yaml`, by the plugin's name:
 
 ```yaml
 parameters:
-  //pub/universe/ikea:ikea_repo:
+  //pub/svc/commerce/ikea:ikea_repo:
     sources: printables,makerworld
 ```
 
@@ -171,7 +253,7 @@ then yours to name - `//my_ikea/<category>:<product>` in a package at the root:
 repositories:
   my_ikea_repo:
     type: enrich
-    source: //pub/universe/ikea:ikea_repo
+    source: //pub/svc/commerce/ikea:ikea_repo
     with:
       sources: printables,makerworld
 dependencies:
@@ -193,13 +275,13 @@ scale). So in a scene:
 ```yaml
 links:
   # Against the back wall (y = 3600), facing into the room.
-  - part: //pub/universe/ikea/products/beds-mattresses/beds:malm-bed-frame-high-160x200
+  - part: //pub/svc/commerce/ikea/products/beds-mattresses/beds:malm-bed-frame-high-160x200
     location: [[4745, 3600, 0], [0, 0, 1], 0]
   # Against the front wall (y = 0): turned 180.
-  - part: //pub/universe/ikea/products/desks-desk-chairs/desks-computer-desks:kallax-desk-111x39
+  - part: //pub/svc/commerce/ikea/products/desks-desk-chairs/desks-computer-desks:kallax-desk-111x39
     location: [[4745, 0, 0], [0, 0, 1], 180]
   # Against the left wall (x = 0): turned 90.
-  - part: //pub/universe/ikea/products/storage-furniture/bookcases-shelving-units:billy-bookcase-80x28x202
+  - part: //pub/svc/commerce/ikea/products/storage-furniture/bookcases-shelving-units:billy-bookcase-80x28x202
     location: [[0, 2700, 0], [0, 0, 1], 90]
 ```
 
@@ -215,7 +297,7 @@ of the colours this package declares (`:white`, `:birch-veneer`, ...) on the lin
 with `sourceCmf: drop` so that the model's own colour gives way:
 
 ```yaml
-    params: {color: "//pub/universe/ikea:white", sourceCmf: drop}
+    params: {color: "//pub/svc/commerce/ikea:white", sourceCmf: drop}
 ```
 
 ## Sample rooms
@@ -223,13 +305,13 @@ with `sourceCmf: drop` so that the model's own colour gives way:
 Two scenes, each a room standing on a floor plan, furnished after one of IKEA's
 own room ideas with the products of this package:
 
-- **`//pub/universe/ikea:studio`**, an 18 m² studio after IKEA's
+- **`//pub/svc/commerce/ikea:studio`**, an 18 m² studio after IKEA's
   [Decorating a small room](https://www.ikea.com/nl/en/ideas/decorating-a-small-room-pub1a05ea50/):
   "The seating area is separated from the sleeping area by a KALLAX shelf unit."
   A KALLAX 147x147 stands out from the back wall between a MALM bed and the
   seating area; a sofa stands near a HEMNES glass-door cabinet; a desk is under
   a SKÅDIS pegboard; a BILLY fills the alcove beside the bathroom block.
-- **`//pub/universe/ikea:student-room`**, a 10.8 m² room after IKEA's
+- **`//pub/svc/commerce/ikea:student-room`**, a 10.8 m² room after IKEA's
   [How to furnish a small student room](https://www.ikea.com/nl/en/ideas/furnish-small-student-room-pub6cb73390/):
   a KALLAX 147x147 "by the head end of a bed", a KALLAX desk "by the foot end of
   a bed", SKÅDIS on the wall, and a reading corner.
@@ -289,13 +371,14 @@ a GrabCAD sign-in: the six GrabCAD products, whose files are only listed.
 
 ## Publishing
 
-This package goes into the PartCAD index as `//pub/universe/ikea`, beside LEGO,
-once the model-site collections it aliases are at `//pub/collection` there. In
-`universe/partcad.yaml` of `partcad/partcad-index`:
+This package goes into the PartCAD index as `//pub/svc/commerce/ikea`, with the
+other stores, once the model-site collections it aliases are at
+`//pub/collection` there. In `svc/commerce/partcad.yaml` of
+`partcad/partcad-index`:
 
 ```yaml
   ikea:
-    desc: IKEA products, by IKEA's categories, as aliases of models in //pub/collection
+    desc: IKEA, quoted at a local store; and its products, by IKEA's categories
     type: git
     url: https://github.com/partcad/partcad-repo-ikea
     track: main
@@ -306,13 +389,14 @@ once the model-site collections it aliases are at `//pub/collection` there. In
 
 | Path | Purpose |
 | --- | --- |
-| `partcad.yaml` | `//pub/universe/ikea`: the `products` external dependency and the `ikea_repo` repository that serves it; the colours, floor plans, floors and rooms of the samples. |
+| `partcad.yaml` | `//pub/svc/commerce/ikea`: the `ikea-store` provider; the `products` external dependency and the `ikea_repo` repository that serves it; the colours, floor plans, floors and rooms of the samples. |
+| `ikea_store.py` | The provider: quotes IKEA articles at one IKEA store, from ikea.com's own search. |
 | `catalog.yaml` | The products: IKEA's categories, what IKEA sells, and the models each is drawn with and how they are placed. |
 | `ikea_repo.py` | The repository plugin: serves the catalog as packages and aliases, and searches it. |
 | `scenes/` | The sample rooms (`*.assy`) and what their plans keep (`*.plan.yaml`). |
 | `floorplans/`, `textures/`, `images/` | The rooms' outlines, the floor's texture, and the pictures above. |
 | `tools/` | `check_catalog.py`, `fit_offset.py`, `draw_floorplans.py`, `draw_textures.py`, `render_readme.sh`. |
-| `test_ikea_repo.py` | The tests. Nothing in them touches the network. |
+| `test_ikea_repo.py`, `test_ikea_store.py` | The tests. Nothing in them touches the network. |
 
 ```shell
 python -m pytest
@@ -333,5 +417,6 @@ with `pc info` of it, and run `tools/check_catalog.py` and the tests.
 The code, the catalog, the floor plans, the texture and the pictures here are
 Apache-2.0 (`LICENSE`). Each model is its designer's, under the licence its site
 states and the table above repeats; a GrabCAD model is under GrabCAD's terms of
-use. IKEA and the names of its products are IKEA's; this package is not
-affiliated with or endorsed by IKEA, nor by any of the model sites.
+use. IKEA and the names of its products are IKEA's, and ikea.com is subject to
+IKEA's terms of use; this package is not affiliated with or endorsed by IKEA,
+nor by any of the model sites.
