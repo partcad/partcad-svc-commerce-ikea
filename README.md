@@ -1,8 +1,9 @@
 # IKEA for PartCAD
 
 IKEA, published with the other stores as `//pub/svc/commerce/ikea`: a provider
-that quotes IKEA articles at a local IKEA store, IKEA products as PartCAD parts
-by IKEA's own categories, and rooms furnished with them.
+that quotes IKEA articles at the IKEA store nearest you, IKEA products as
+PartCAD parts by IKEA's own categories - the European, American and Canadian
+ranges together - and rooms furnished with them.
 
 | A studio divided by a KALLAX | A student room |
 | --- | --- |
@@ -12,8 +13,9 @@ by IKEA's own categories, and rooms furnished with them.
 Both rooms are laid out after IKEA's own room ideas, furnished with this
 package's products, and stand on walls PartCAD raises from a floor plan (see
 [Sample rooms](#sample-rooms)) - and both are priced at a store with one
-command: the studio's eleven products came to 912.93 EUR at IKEA Amsterdam on
-2026-11-06 (see [Quotes at a local store](#quotes-at-a-local-store)).
+command: on 2026-11-06 the studio's eleven products came to 912.93 EUR at IKEA
+Amsterdam, and the seven of them IKEA sells in the United States to $1,110.97 at
+IKEA Elizabeth, New Jersey (see [Quotes at a local store](#quotes-at-a-local-store)).
 
 **Every product is an alias of somebody's model of it.** A product is a part of
 type `alias` of a model in one of PartCAD's model-site collections,
@@ -24,8 +26,15 @@ when it is first built.
 
 **Only the products a model can be found of are here.** That is the rule of
 this catalog, and `tools/check_catalog.py` checks it against the live sites.
-It holds 27 products in 12 of IKEA's categories; 21 of them are drawn by a model
+It holds 30 products in 13 of IKEA's categories; 21 of them are drawn by a model
 that builds without signing in anywhere.
+
+**One catalog for Europe, the United States and Canada.** A product IKEA sells
+in any of them is here, and is offered at every store: which store has it, and
+for how much, is the store's to say, and a scene is quoted for what its store
+sells. The United States and Canada sell most of the range under article numbers
+of their own, which every product lists beside IKEA's global one
+(`tools/join_markets.py` finds them).
 
 **Every product is placed the same way**, whoever drew its model and however
 they drew it: millimetres, Z up, the width along X, the middle of its back edge
@@ -49,10 +58,10 @@ search their own catalog, which this one and the collections all do. See
 
 The provider `//pub/svc/commerce/ikea:ikea-store` quotes IKEA articles - any
 part declared with `vendor: ikea` and an IKEA article number as its `sku`,
-which every product here is - at one IKEA store: the price IKEA asks in that
-store's country, and whether that store sells it, off its shelf or ordered at
-its desk. Every product's category names it as its supplier, so a product, a
-scene or an assembly made of them is quoted there without saying so:
+which every product here is - at the IKEA store nearest you: the price IKEA asks
+in your country, in its currency, and what that store says of its stock. Every
+product's category names it as its supplier, so a product, a scene or an
+assembly made of them is quoted there without saying so:
 
 ```text
 $ pc supply quote //pub/svc/commerce/ikea/products/tables-chairs/armchairs:poang-armchair#2
@@ -63,23 +72,46 @@ INFO:         //pub/svc/commerce/ikea/products/tables-chairs/armchairs:poang-arm
 $ pc supply quote //pub/svc/commerce/ikea:studio
 INFO:     //pub/svc/commerce/ikea:ikea-store: None: 912.93 EUR
 INFO:         ... the eleven products of the studio
-INFO: No provider found:
+INFO: Left out, as nobody supplies them:
 INFO:         //builtin/building:wall#1  ... and the floor
 ```
 
-A room's walls and floor are nobody's to sell, so they are listed apart, and the
-command ends with an error status for them; the quote is the furniture's.
-`pc supply quote --json` adds what each line was quoted on: the article, what
-IKEA calls it, how many, the price of one and of all, and the store's stock in
-its words ("in stock", "only a few left", "ordered in the store").
+A scene is quoted for what can be bought for it: its walls and floor are
+nobody's to sell, and a product your country's IKEA does not sell is not
+available at its store, so both are listed as left out, and the quote is the
+rest. In the United States the same studio is $1,110.97 for seven products, with
+the European MALM bed, the white LACK tables and the LACK TV bench left out. An
+assembly is quoted whole or not at all, unless `pc supply quote --ignore-missing`
+says to treat it the way a scene is treated. `pc supply quote --json` adds what
+each line was quoted on: the article (your country's number for it), what IKEA
+calls it, how many, the price of one and of all, and the store's stock in its
+words ("in stock", "only a few left", "ordered in the store", "out of stock").
 
-**Which store.** IKEA Amsterdam (`088`) unless you say otherwise, by its number
-or by a word of its name; a name that is not one store's is answered with the
-stores there are:
+**Where you are is PartCAD's to say**, not this package's. The provider is
+handed your country, the state and city of your address, your language and your
+currency (PartCAD's `country`, `language`, `currency` and `user` options, worked
+out from your machine's locale when you set none), and nothing finer. The country
+decides the site asked (`ikea.com/<country>/<language>/`), its stores and its
+prices; the language is yours where ikea.com has the site in it, else English;
+the currency is the one IKEA prices in.
 
-```shell
-pc --extra-param //pub/svc/commerce/ikea:ikea-store.store=Utrecht supply quote ...
+```yaml
+# ~/.partcad/config.yaml
+country: US              # or PC_COUNTRY=US; else your address's countryCode, else your locale
+location: "40.73,-74.17" # optional: chooses the nearest store, and is never handed to the provider
+user:
+  city: Newark           # optional, as is the rest of your address
+  stateCode: NJ
 ```
+
+**Which store.** Unset, the provider takes the store of your city; with none
+there, the stores of your state, else of your country, and asks PartCAD which of
+them is nearest you - which PartCAD answers from your location, or else your
+address, without telling the provider either. When PartCAD cannot say, the first
+of them by name is taken. Every quote says which store it is from, and how it was
+chosen. To use another, set the one parameter, `store`, by its number on ikea.com
+or a word of its name; a name that is not one store's is answered with the stores
+there are:
 
 ```yaml
 # ~/.partcad/config.yaml, for every quote
@@ -88,40 +120,35 @@ parameters:
     store: Utrecht
 ```
 
-| Parameter | Default | What it is |
-| --- | --- | --- |
-| `country` | `nl` | The store's country, as ikea.com spells it (`ikea.com/<country>/<language>/`): it decides the stores there are, the prices and their currency. |
-| `language` | `en` | The language of the site the store is asked through: the names of things, not their prices. |
-| `store` | `088` | The store, by its number on ikea.com or a word of its name. |
-| `currency` | `EUR` | What the country prices in, which PartCAD takes the quote to be in; a quote in another is refused, saying which to set. |
-
-A store in another country is an `enrich` of the provider:
-
-```yaml
-providers:
-  ikea-berlin:
-    type: enrich
-    source: //pub/svc/commerce/ikea:ikea-store
-    with: {country: de, language: de, store: "324"}   # IKEA Berlin-Lichtenberg
+```shell
+pc --extra-param //pub/svc/commerce/ikea:ikea-store.store=Utrecht supply quote ...
 ```
+
+**The United States and Canada** sell most of the range under numbers of their
+own: KALLAX 77x147 cm is 802.758.87 in Europe and 206.316.63 in both, and BILLY
+80x28x202 cm white is 205.220.46 there. A store there is asked for its own
+number, which every product lists (`markets` in `catalog.yaml`); a product with
+none for your country is not sold there, and is not available at its stores.
+
+**Stock is said, not refused.** A product your country sells is available at its
+store whatever the store has today, and a quote says per line what the store said
+of it: whether that matters is yours to weigh. IKEA says how much a store has in
+words rather than numbers.
 
 **Where the answers come from.** IKEA publishes no API for prices or stock.
 What answers both is ikea.com's own product search, asked for the article number
 at the store - what the website's search page asks, without a key - and the list
 of a country's stores the website reads. The provider says what it is in its
 User-Agent, keeps every answer for an hour (and the stores for a day) under
-`~/.cache/partcad-ikea/` (`$PARTCAD_IKEA_CACHE`), and asks nothing else. IKEA
-says how much a store has in words rather than numbers, so a store that has
-some is taken to have as many as are asked for. A country that sells an article
-under another number than this catalog's (Dutch) one - the United States and
-Canada - does not find it, and says so. Nothing is put in a basket at ikea.com,
-so a quote has no cart ID, and ordering is not implemented. Using ikea.com is
-subject to IKEA's terms of use.
+`~/.cache/partcad-ikea/` (`$PARTCAD_IKEA_CACHE`), and asks nothing else. Nothing
+is put in a basket at ikea.com, so a quote has no cart ID, and ordering is not
+implemented. Using ikea.com is subject to IKEA's terms of use.
 
-Run against ikea.com on 2026-11-06: the Dutch and German store lists; prices and
-stock at IKEA Amsterdam, IKEA Utrecht and IKEA Berlin-Lichtenberg, plain
-articles and combinations (`S...`) alike; and both rooms quoted end to end with
-PartCAD.
+Run against ikea.com on 2026-11-06, with PartCAD from the branch named in
+[Status](#status): both rooms quoted end to end in the Netherlands (by the city of
+an Amsterdam address), the studio in the United States (by a location in New
+Jersey, which chose IKEA Elizabeth), a store named by the user, and no country
+configured at all, which the provider answers by saying how to set one.
 
 ## Categories
 
@@ -134,7 +161,8 @@ named as ikea.com names them and keyed to its own keys (the `ikea:` of each in
 ├── storage-furniture                    st001
 │   ├── bookcases-shelving-units         st002   KALLAX, LACK, BILLY, HEMNES
 │   ├── tv-media-furniture               10475   KALLAX, LACK
-│   └── storage-solution-systems         46052   PAX
+│   ├── storage-solution-systems         46052   PAX
+│   └── trolleys                         fu005   RÅSKOG
 ├── beds-mattresses                      bm001
 │   └── beds                             bm003   MALM
 ├── sofas-armchairs-footstools           700640
@@ -169,37 +197,43 @@ Each one is bought, not made: it names `vendor: ikea` and the article number as
 its `sku`, and its `url` is the product's page on ikea.com. What IKEA says about
 a product - its name, type, size, colour, article number and page - is from
 ikea.com's own product search, for the Netherlands in English (`nl/en`): metric,
-in English, and in European bed sizes.
+in English, and in European bed sizes; a product IKEA Netherlands does not sell
+is described as Great Britain or Canada sells it. Its article is IKEA's global
+number, which every European IKEA sells it under; "US · CA" is what the United
+States and Canada sell it as, and "—" where they do not.
 
-| Category | Part | IKEA | Drawn with | Licence |
-| --- | --- | --- | --- | --- |
-| `storage-furniture/bookcases-shelving-units` | `kallax-shelving-unit-77x41` | [KALLAX shelving unit, 77x41 cm](https://www.ikea.com/nl/en/p/kallax-shelving-unit-white-90301555/) 903.015.55 | [Printables](https://www.printables.com/model/1787571), 25:1 | CC0 1.0 |
-| `storage-furniture/bookcases-shelving-units` | `kallax-shelving-unit-77x77` | [KALLAX shelving unit, 77x77 cm](https://www.ikea.com/nl/en/p/kallax-shelving-unit-white-20275814/) 202.758.14 | [Printables](https://www.printables.com/model/1297716) (+2 more) | CC0 1.0 |
-| `storage-furniture/bookcases-shelving-units` | `kallax-shelving-unit-42x147` | [KALLAX shelving unit, 42x147 cm](https://www.ikea.com/nl/en/p/kallax-shelving-unit-white-00275848/) 002.758.48 | [Printables](https://www.printables.com/model/1787571), 25:1 | CC0 1.0 |
-| `storage-furniture/bookcases-shelving-units` | `kallax-shelving-unit-77x147` | [KALLAX shelving unit, 77x147 cm](https://www.ikea.com/nl/en/p/kallax-shelving-unit-white-80275887/) 802.758.87 | [Printables](https://www.printables.com/model/1787571), 25:1 | CC0 1.0 |
-| `storage-furniture/bookcases-shelving-units` | `kallax-shelving-unit-112x147` | [KALLAX shelving unit, 112x147 cm](https://www.ikea.com/nl/en/p/kallax-shelving-unit-white-10409932/) 104.099.32 | [Printables](https://www.printables.com/model/1787571), 25:1 | CC0 1.0 |
-| `storage-furniture/bookcases-shelving-units` | `kallax-shelving-unit-147x147` | [KALLAX shelving unit, 147x147 cm](https://www.ikea.com/nl/en/p/kallax-shelving-unit-white-30275861/) 302.758.61 | [Printables](https://www.printables.com/model/1787571), 25:1 (+1 more) | CC0 1.0 |
-| `storage-furniture/bookcases-shelving-units` | `kallax-shelving-unit-182x182` | [KALLAX shelving unit, 182x182 cm](https://www.ikea.com/nl/en/p/kallax-shelving-unit-black-brown-70301542/) 703.015.42 | [Printables](https://www.printables.com/model/1787571), 25:1 (+1 more) | CC0 1.0 |
-| `storage-furniture/bookcases-shelving-units` | `lack-wall-shelf-unit-30x190` | [LACK wall shelf unit, 30x190 cm](https://www.ikea.com/nl/en/p/lack-wall-shelf-unit-white-60282186/) 602.821.86 | [Printables](https://www.printables.com/model/1787409), 25:1 | CC0 1.0 |
-| `storage-furniture/bookcases-shelving-units` | `billy-bookcase-80x28x202` | [BILLY bookcase, 80x28x202 cm](https://www.ikea.com/nl/en/p/billy-bookcase-white-00263850/) 002.638.50 | [Printables](https://www.printables.com/model/1335419), 12:1 | CC BY 4.0 |
-| `storage-furniture/bookcases-shelving-units` | `hemnes-glass-door-cabinet-with-3-drawers-90x197` | [HEMNES glass-door cabinet with 3 drawers, 90x197 cm](https://www.ikea.com/nl/en/p/hemnes-glass-door-cabinet-with-3-drawers-white-stain-light-brown-50413507/) 504.135.07 | [Printables](https://www.printables.com/model/34773) | CC BY 4.0 |
-| `storage-furniture/tv-media-furniture` | `kallax-tv-bench-147x60` | [KALLAX TV bench, 147x60 cm](https://www.ikea.com/nl/en/p/kallax-tv-bench-white-70562087/) 705.620.87 | [Printables](https://www.printables.com/model/1787571), 25:1 | CC0 1.0 |
-| `storage-furniture/tv-media-furniture` | `lack-tv-bench-160x35x36` | [LACK TV bench, 160x35x36 cm](https://www.ikea.com/nl/en/p/lack-tv-bench-white-30498927/) 304.989.27 | [Printables](https://www.printables.com/model/1787409), 25:1 | CC0 1.0 |
-| `storage-furniture/tv-media-furniture` | `lack-tv-bench-120x35x36` | [LACK TV bench, 120x35x36 cm](https://www.ikea.com/nl/en/p/lack-tv-bench-white-30498890/) 304.988.90 | [Printables](https://www.printables.com/model/1787409), 25:1 | CC0 1.0 |
-| `storage-furniture/storage-solution-systems` | `pax-wardrobe-frame-100x58x201` | [PAX wardrobe frame, 100x58x201 cm](https://www.ikea.com/nl/en/p/pax-wardrobe-frame-white-70458203/) 704.582.03 | [GrabCAD](https://grabcad.com/library/ikea-pax-100x58x201-1), as drawn | GrabCAD's terms |
-| `beds-mattresses/beds` | `malm-bed-frame-high-160x200` | [MALM bed frame, high, 160x200 cm](https://www.ikea.com/nl/en/p/malm-bed-frame-high-grey-stained-luroy-s69385793/) S693.857.93 | [MakerWorld](https://makerworld.com/en/models/2240785), 22.6:1 | Standard Digital File License |
-| `sofas-armchairs-footstools/sofas` | `klippan-2-seat-sofa` | [KLIPPAN 2-seat sofa](https://www.ikea.com/nl/en/p/klippan-2-seat-sofa-vissle-grey-s79010614/) S790.106.14 | [GrabCAD](https://grabcad.com/library/ikea-klippan-sofa), as drawn | GrabCAD's terms |
-| `sofas-armchairs-footstools/sofas` | `soderhamn-3-seat-section` | [SÖDERHAMN 3-seat section](https://www.ikea.com/nl/en/p/soderhamn-3-seat-section-kelinge-beige-s49621606/) S496.216.06 | [GrabCAD](https://grabcad.com/library/ikea-soderhamn-1), as drawn | GrabCAD's terms |
-| `tables-chairs/coffee-side-tables` | `lack-side-table-55x55` | [LACK side table, 55x55 cm](https://www.ikea.com/nl/en/p/lack-side-table-white-30449908/) 304.499.08 | [Printables](https://www.printables.com/model/320128) (+1 more) | CC0 1.0 |
-| `tables-chairs/coffee-side-tables` | `lack-coffee-table-90x55` | [LACK coffee table, 90x55 cm](https://www.ikea.com/nl/en/p/lack-coffee-table-white-stained-oak-effect-50319029/) 503.190.29 | [Printables](https://www.printables.com/model/1787409), 25:1 | CC0 1.0 |
-| `tables-chairs/armchairs` | `poang-armchair` | [POÄNG armchair](https://www.ikea.com/nl/en/p/poang-armchair-birch-veneer-knisa-light-beige-s39240787/) S392.407.87 | [Printables](https://www.printables.com/model/290635), 1000:1 | CC0 1.0 |
-| `tables-chairs/childrens-chairs` | `mammut-childrens-stool` | [MAMMUT children's stool](https://www.ikea.com/nl/en/p/mammut-childrens-stool-in-outdoor-red-70581991/) 705.819.91 | [Printables](https://www.printables.com/model/168889) | CC BY-SA 4.0 |
-| `desks-desk-chairs/desks-computer-desks` | `kallax-desk-111x39` | [KALLAX desk, 111x39 cm](https://www.ikea.com/nl/en/p/kallax-desk-white-30582445/) 305.824.45 | [Printables](https://www.printables.com/model/1787571), 25:1 | CC0 1.0 |
-| `desks-desk-chairs/desks-computer-desks` | `micke-desk-105x50` | [MICKE desk, 105x50 cm](https://www.ikea.com/nl/en/p/micke-desk-white-80213074/) 802.130.74 | [GrabCAD](https://grabcad.com/library/micke-ikea-desk-1), as drawn | GrabCAD's terms |
-| `desks-desk-chairs/desks-computer-desks` | `lagkapten-alex-desk-140x60` | [LAGKAPTEN / ALEX desk, 140x60 cm](https://www.ikea.com/nl/en/p/lagkapten-alex-desk-white-s99431982/) S994.319.82 | [GrabCAD](https://grabcad.com/library/ikea-lagkapten-desk-1), as drawn | GrabCAD's terms |
-| `baby-children/toy-storage` | `trofast-storage-combination-with-boxes-99x44x56` | [TROFAST storage combination with boxes, 99x44x56 cm](https://www.ikea.com/nl/en/p/trofast-storage-combination-with-boxes-white-white-s59574459/) S595.744.59 | [Printables](https://www.printables.com/model/589331), 12:1 | CC BY 4.0 |
-| `small-storage-organisers/hooks-wall-organisation` | `skadis-pegboard-56x56` | [SKÅDIS pegboard, 56x56 cm](https://www.ikea.com/nl/en/p/skadis-pegboard-white-00320803/) 003.208.03 | [Printables](https://www.printables.com/model/1601739) | CC0 1.0 |
-| `lighting/lamps` | `tertial-work-lamp` | [TERTIAL work lamp](https://www.ikea.com/nl/en/p/tertial-work-lamp-dark-grey-50355395/) 503.553.95 | [GrabCAD](https://grabcad.com/library/ikea-tertial-work-lamp-1), as drawn | GrabCAD's terms |
+| Category | Part | IKEA | US · CA | Drawn with | Licence |
+| --- | --- | --- | --- | --- | --- |
+| `storage-furniture/bookcases-shelving-units` | `kallax-shelving-unit-77x41` | [KALLAX shelving unit, 77x41 cm](https://www.ikea.com/nl/en/p/kallax-shelving-unit-white-90301555/) 903.015.55 | 903.015.55 · — | [Printables](https://www.printables.com/model/1787571), 25:1 | CC0 1.0 |
+| `storage-furniture/bookcases-shelving-units` | `kallax-shelving-unit-77x77` | [KALLAX shelving unit, 77x77 cm](https://www.ikea.com/nl/en/p/kallax-shelving-unit-white-20275814/) 202.758.14 | 206.316.39 · 206.316.39 | [Printables](https://www.printables.com/model/1297716) (+2 more) | CC0 1.0 |
+| `storage-furniture/bookcases-shelving-units` | `kallax-shelving-unit-42x147` | [KALLAX shelving unit, 42x147 cm](https://www.ikea.com/nl/en/p/kallax-shelving-unit-white-00275848/) 002.758.48 | 406.316.38 · 406.316.38 | [Printables](https://www.printables.com/model/1787571), 25:1 | CC0 1.0 |
+| `storage-furniture/bookcases-shelving-units` | `kallax-shelving-unit-77x147` | [KALLAX shelving unit, 77x147 cm](https://www.ikea.com/nl/en/p/kallax-shelving-unit-white-80275887/) 802.758.87 | 206.316.63 · 206.316.63 | [Printables](https://www.printables.com/model/1787571), 25:1 | CC0 1.0 |
+| `storage-furniture/bookcases-shelving-units` | `kallax-shelving-unit-112x147` | [KALLAX shelving unit, 112x147 cm](https://www.ikea.com/nl/en/p/kallax-shelving-unit-white-10409932/) 104.099.32 | 906.372.99 · 906.372.99 | [Printables](https://www.printables.com/model/1787571), 25:1 | CC0 1.0 |
+| `storage-furniture/bookcases-shelving-units` | `kallax-shelving-unit-147x147` | [KALLAX shelving unit, 147x147 cm](https://www.ikea.com/nl/en/p/kallax-shelving-unit-white-30275861/) 302.758.61 | 106.373.02 · 106.373.02 | [Printables](https://www.printables.com/model/1787571), 25:1 (+1 more) | CC0 1.0 |
+| `storage-furniture/bookcases-shelving-units` | `kallax-shelving-unit-182x182` | [KALLAX shelving unit, 182x182 cm](https://www.ikea.com/nl/en/p/kallax-shelving-unit-black-brown-70301542/) 703.015.42 | 703.015.42 · 703.015.42 | [Printables](https://www.printables.com/model/1787571), 25:1 (+1 more) | CC0 1.0 |
+| `storage-furniture/bookcases-shelving-units` | `lack-wall-shelf-unit-30x190` | [LACK wall shelf unit, 30x190 cm](https://www.ikea.com/nl/en/p/lack-wall-shelf-unit-white-60282186/) 602.821.86 | 602.821.86 · 602.821.86 | [Printables](https://www.printables.com/model/1787409), 25:1 | CC0 1.0 |
+| `storage-furniture/bookcases-shelving-units` | `billy-bookcase-80x28x202` | [BILLY bookcase, 80x28x202 cm](https://www.ikea.com/nl/en/p/billy-bookcase-white-00263850/) 002.638.50 | 205.220.46 · 205.220.46 | [Printables](https://www.printables.com/model/1335419), 12:1 | CC BY 4.0 |
+| `storage-furniture/bookcases-shelving-units` | `hemnes-glass-door-cabinet-with-3-drawers-90x197` | [HEMNES glass-door cabinet with 3 drawers, 90x197 cm](https://www.ikea.com/nl/en/p/hemnes-glass-door-cabinet-with-3-drawers-white-stain-light-brown-50413507/) 504.135.07 | 504.135.07 · 504.135.07 | [Printables](https://www.printables.com/model/34773) | CC BY 4.0 |
+| `storage-furniture/bookcases-shelving-units` | `hemnes-bookcase-49x197` | [HEMNES bookcase, 49x197 cm](https://www.ikea.com/ca/en/p/hemnes-bookcase-white-stain-40371763/) 403.717.63 | 403.717.63 · 403.717.63 | [GrabCAD](https://grabcad.com/library/ikea-hemnes-500-1), as drawn | GrabCAD's terms |
+| `storage-furniture/bookcases-shelving-units` | `hemnes-bookcase-90x197` | [HEMNES bookcase, 90x197 cm](https://www.ikea.com/gb/en/p/hemnes-bookcase-white-stain-light-brown-60413502/) 604.135.02 | 604.135.02 · 604.135.02 | [GrabCAD](https://grabcad.com/library/ikea-hemnes-900-1), as drawn | GrabCAD's terms |
+| `storage-furniture/tv-media-furniture` | `kallax-tv-bench-147x60` | [KALLAX TV bench, 147x60 cm](https://www.ikea.com/nl/en/p/kallax-tv-bench-white-70562087/) 705.620.87 | — · 005.748.85 | [Printables](https://www.printables.com/model/1787571), 25:1 | CC0 1.0 |
+| `storage-furniture/tv-media-furniture` | `lack-tv-bench-160x35x36` | [LACK TV bench, 160x35x36 cm](https://www.ikea.com/nl/en/p/lack-tv-bench-white-30498927/) 304.989.27 | — · — | [Printables](https://www.printables.com/model/1787409), 25:1 | CC0 1.0 |
+| `storage-furniture/tv-media-furniture` | `lack-tv-bench-120x35x36` | [LACK TV bench, 120x35x36 cm](https://www.ikea.com/nl/en/p/lack-tv-bench-white-30498890/) 304.988.90 | — · — | [Printables](https://www.printables.com/model/1787409), 25:1 | CC0 1.0 |
+| `storage-furniture/storage-solution-systems` | `pax-wardrobe-frame-100x58x201` | [PAX wardrobe frame, 100x58x201 cm](https://www.ikea.com/nl/en/p/pax-wardrobe-frame-white-70458203/) 704.582.03 | — · — | [GrabCAD](https://grabcad.com/library/ikea-pax-100x58x201-1), as drawn | GrabCAD's terms |
+| `storage-furniture/trolleys` | `raskog-trolley-35x45x77` | [RÅSKOG trolley, 35x45x77 cm](https://www.ikea.com/gb/en/p/raskog-trolley-white-30586783/) 305.867.83 | 305.867.83 · 305.867.83 | [GrabCAD](https://grabcad.com/library/raskog-storage-cart-1), as drawn | GrabCAD's terms |
+| `beds-mattresses/beds` | `malm-bed-frame-high-160x200` | [MALM bed frame, high, 160x200 cm](https://www.ikea.com/nl/en/p/malm-bed-frame-high-grey-stained-luroy-s69385793/) S693.857.93 | — · — | [MakerWorld](https://makerworld.com/en/models/2240785), 22.6:1 | Standard Digital File License |
+| `sofas-armchairs-footstools/sofas` | `klippan-2-seat-sofa` | [KLIPPAN 2-seat sofa](https://www.ikea.com/nl/en/p/klippan-2-seat-sofa-vissle-grey-s79010614/) S790.106.14 | S090.106.17 · S290.106.16 | [GrabCAD](https://grabcad.com/library/ikea-klippan-sofa), as drawn | GrabCAD's terms |
+| `sofas-armchairs-footstools/sofas` | `soderhamn-3-seat-section` | [SÖDERHAMN 3-seat section](https://www.ikea.com/nl/en/p/soderhamn-3-seat-section-kelinge-beige-s49621606/) S496.216.06 | — · — | [GrabCAD](https://grabcad.com/library/ikea-soderhamn-1), as drawn | GrabCAD's terms |
+| `tables-chairs/coffee-side-tables` | `lack-side-table-55x55` | [LACK side table, 55x55 cm](https://www.ikea.com/nl/en/p/lack-side-table-white-30449908/) 304.499.08 | — · — | [Printables](https://www.printables.com/model/320128) (+1 more) | CC0 1.0 |
+| `tables-chairs/coffee-side-tables` | `lack-coffee-table-90x55` | [LACK coffee table, 90x55 cm](https://www.ikea.com/nl/en/p/lack-coffee-table-white-stained-oak-effect-50319029/) 503.190.29 | — · — | [Printables](https://www.printables.com/model/1787409), 25:1 | CC0 1.0 |
+| `tables-chairs/armchairs` | `poang-armchair` | [POÄNG armchair](https://www.ikea.com/nl/en/p/poang-armchair-birch-veneer-knisa-light-beige-s39240787/) S392.407.87 | S593.059.28 · S493.065.70 | [Printables](https://www.printables.com/model/290635), 1000:1 | CC0 1.0 |
+| `tables-chairs/childrens-chairs` | `mammut-childrens-stool` | [MAMMUT children's stool](https://www.ikea.com/nl/en/p/mammut-childrens-stool-in-outdoor-red-70581991/) 705.819.91 | — · — | [Printables](https://www.printables.com/model/168889) | CC BY-SA 4.0 |
+| `desks-desk-chairs/desks-computer-desks` | `kallax-desk-111x39` | [KALLAX desk, 111x39 cm](https://www.ikea.com/nl/en/p/kallax-desk-white-30582445/) 305.824.45 | 305.824.45 · 305.824.45 | [Printables](https://www.printables.com/model/1787571), 25:1 | CC0 1.0 |
+| `desks-desk-chairs/desks-computer-desks` | `micke-desk-105x50` | [MICKE desk, 105x50 cm](https://www.ikea.com/nl/en/p/micke-desk-white-80213074/) 802.130.74 | 802.130.74 · 802.130.74 | [GrabCAD](https://grabcad.com/library/micke-ikea-desk-1), as drawn | GrabCAD's terms |
+| `desks-desk-chairs/desks-computer-desks` | `lagkapten-alex-desk-140x60` | [LAGKAPTEN / ALEX desk, 140x60 cm](https://www.ikea.com/nl/en/p/lagkapten-alex-desk-white-s99431982/) S994.319.82 | S994.319.82 · S994.319.82 | [GrabCAD](https://grabcad.com/library/ikea-lagkapten-desk-1), as drawn | GrabCAD's terms |
+| `baby-children/toy-storage` | `trofast-storage-combination-with-boxes-99x44x56` | [TROFAST storage combination with boxes, 99x44x56 cm](https://www.ikea.com/nl/en/p/trofast-storage-combination-with-boxes-white-white-s59574459/) S595.744.59 | S595.744.59 · S595.744.59 | [Printables](https://www.printables.com/model/589331), 12:1 | CC BY 4.0 |
+| `small-storage-organisers/hooks-wall-organisation` | `skadis-pegboard-56x56` | [SKÅDIS pegboard, 56x56 cm](https://www.ikea.com/nl/en/p/skadis-pegboard-white-00320803/) 003.208.03 | 003.208.03 · 003.208.03 | [Printables](https://www.printables.com/model/1601739) | CC0 1.0 |
+| `lighting/lamps` | `tertial-work-lamp` | [TERTIAL work lamp](https://www.ikea.com/nl/en/p/tertial-work-lamp-dark-grey-50355395/) 503.553.95 | 203.554.34 · 203.554.34 | [GrabCAD](https://grabcad.com/library/ikea-tertial-work-lamp-1), as drawn | GrabCAD's terms |
 
 "25:1" is a scale model (here, interior-design miniatures at 1:25 and dollhouse
 models at 1:12) drawn at full size; "as drawn" is a GrabCAD model, which is served
@@ -234,16 +268,16 @@ model of is not served at all** - it is not listed, found or searched.
 
 | `sources` | What you get |
 | --- | --- |
-| `printables,makerworld,grabcad,thingiverse,cults3d` (the default) | Every product. The six GrabCAD ones build only with a GrabCAD sign-in (`pc login //pub/collection/grabcad:grabcad_repo`). |
-| `printables,makerworld` | The 21 products that build without signing in anywhere. |
-| `grabcad,printables,makerworld` | GrabCAD's full CAD models first, where there are some, for those who have signed in. |
+| `printables makerworld grabcad thingiverse cults3d` (the default) | Every product. The nine GrabCAD ones build only with a GrabCAD sign-in (`pc login //pub/collection/grabcad:grabcad_repo`). |
+| `printables makerworld` | The 21 products that build without signing in anywhere. |
+| `grabcad printables makerworld` | GrabCAD's full CAD models first, where there are some, for those who have signed in. |
 
 Set it in your own `~/.partcad/config.yaml`, by the plugin's name:
 
 ```yaml
 parameters:
   //pub/svc/commerce/ikea:ikea_repo:
-    sources: printables,makerworld
+    sources: printables makerworld
 ```
 
 or with an `enrich` of the plugin in a package of your own, whose products are
@@ -255,7 +289,7 @@ repositories:
     type: enrich
     source: //pub/svc/commerce/ikea:ikea_repo
     with:
-      sources: printables,makerworld
+      sources: printables makerworld
 dependencies:
   my_ikea:
     type: external
@@ -355,7 +389,7 @@ has no model on either yet; the plugin takes them as sources all the same.
 
 With PartCAD as of this package, built and placed with `pc info` and drawn with
 `pc render`: every product that builds without a sign-in. Not built, for want of
-a GrabCAD sign-in: the six GrabCAD products, whose files are only listed.
+a GrabCAD sign-in: the nine GrabCAD products, whose files are only listed.
 
 13 of the products need two PartCAD fixes that are not in a release yet
 (`partcad/partcad`, branch `claude/ikea-external-repo-setup-3qhqff`):
@@ -366,6 +400,12 @@ a GrabCAD sign-in: the six GrabCAD products, whose files are only listed.
 - TROFAST's model is an ASCII STL, which PartCAD 0.9.4 reads as a mesh with no
   surface and then neither moves nor scales: the product comes out at 1:12 where
   its model lies.
+
+So does the provider's taking where you are from PartCAD (`request["userInfo"]`)
+and asking it which store is nearest (`partcad_user`), and a scene's quote leaving
+out what its store does not sell. With an older PartCAD the provider reads your
+country, state and city from the `user` section PartCAD then handed every plugin,
+and takes the first store of your city, state or country by name.
 
 `partcad:` here goes up to the release that carries them.
 
@@ -380,9 +420,9 @@ other stores, once the model-site collections it aliases are at
   ikea:
     desc: IKEA, quoted at a local store; and its products, by IKEA's categories
     type: git
-    url: https://github.com/partcad/partcad-repo-ikea
-    track: main
-    revision: <the commit main is at>
+    url: https://github.com/partcad/partcad-svc-commerce-ikea
+    track: master
+    revision: <the commit master is at>
 ```
 
 ## Layout
@@ -390,12 +430,12 @@ other stores, once the model-site collections it aliases are at
 | Path | Purpose |
 | --- | --- |
 | `partcad.yaml` | `//pub/svc/commerce/ikea`: the `ikea-store` provider; the `products` external dependency and the `ikea_repo` repository that serves it; the colours, floor plans, floors and rooms of the samples. |
-| `ikea_store.py` | The provider: quotes IKEA articles at one IKEA store, from ikea.com's own search. |
+| `ikea_store.py` | The provider: quotes IKEA articles at the IKEA store nearest you, from ikea.com's own search. |
 | `catalog.yaml` | The products: IKEA's categories, what IKEA sells, and the models each is drawn with and how they are placed. |
 | `ikea_repo.py` | The repository plugin: serves the catalog as packages and aliases, and searches it. |
 | `scenes/` | The sample rooms (`*.assy`) and what their plans keep (`*.plan.yaml`). |
 | `floorplans/`, `textures/`, `images/` | The rooms' outlines, the floor's texture, and the pictures above. |
-| `tools/` | `check_catalog.py`, `fit_offset.py`, `draw_floorplans.py`, `draw_textures.py`, `render_readme.sh`. |
+| `tools/` | `check_catalog.py`, `join_markets.py`, `fit_offset.py`, `draw_floorplans.py`, `draw_textures.py`, `render_readme.sh`. |
 | `test_ikea_repo.py`, `test_ikea_store.py` | The tests. Nothing in them touches the network. |
 
 ```shell

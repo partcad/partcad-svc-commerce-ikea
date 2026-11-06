@@ -8,7 +8,19 @@
 #
 # What IKEA says about a product (its name, type, size, colour, article number
 # and page) is from ikea.com's own product search, for the Netherlands in
-# English (nl/en): metric, in English, and in European bed sizes.
+# English (nl/en): metric, in English, and in European bed sizes. A product
+# IKEA Netherlands does not sell is described as the first of Great Britain
+# (gb/en) and Canada (ca/en) that does. The 'article' is IKEA's global article
+# number, which every European IKEA sells it under, wherever it sells it at
+# all.
+#
+# The catalog is the European, the American and the Canadian ranges together:
+# a product sold in any of them is here, and is offered wherever a store is
+# asked for it - which store has it, and for how much, is the store's to say
+# (see ikea_store.py), and a quote leaves out what the store does not sell.
+# The United States and Canada sell most of it under numbers of their own,
+# which are its 'markets' (ikea: markets: {us: ..., ca: ...}); a product with
+# no number for a market is not sold there. tools/join_markets.py finds them.
 # tools/check_catalog.py asks IKEA and the model sites again and says what no
 # longer agrees.
 #
@@ -50,6 +62,9 @@ categories:
   storage-furniture/storage-solution-systems:
     ikea: "46052"
     name: Storage solution systems
+  storage-furniture/trolleys:
+    ikea: fu005
+    name: Trolleys
   beds-mattresses:
     ikea: bm001
     name: Beds & mattresses
@@ -111,6 +126,8 @@ products:
       colour: white
       article: "90301555"
       url: https://www.ikea.com/nl/en/p/kallax-shelving-unit-white-90301555/
+      markets:
+        us: "90301555"
     size: [770, 390, 420]
     keywords: [cube, cubby, bookshelf, expedit, room divider]
     models:
@@ -132,6 +149,9 @@ products:
       size: 77x77 cm
       article: "20275814"
       url: https://www.ikea.com/nl/en/p/kallax-shelving-unit-white-20275814/
+      markets:
+        ca: "20631639"
+        us: "20631639"
     size: [770, 390, 770]
     keywords: [cube, cubby, bookshelf, expedit, room divider]
     models:
@@ -168,6 +188,9 @@ products:
       size: 42x147 cm
       article: "00275848"
       url: https://www.ikea.com/nl/en/p/kallax-shelving-unit-white-00275848/
+      markets:
+        ca: "40631638"
+        us: "40631638"
     size: [420, 390, 1470]
     keywords: [cube, cubby, bookshelf, expedit, room divider]
     models:
@@ -188,6 +211,9 @@ products:
       size: 77x147 cm
       article: "80275887"
       url: https://www.ikea.com/nl/en/p/kallax-shelving-unit-white-80275887/
+      markets:
+        ca: "20631663"
+        us: "20631663"
     size: [770, 390, 1470]
     keywords: [cube, cubby, bookshelf, expedit, room divider]
     models:
@@ -208,6 +234,9 @@ products:
       size: 112x147 cm
       article: "10409932"
       url: https://www.ikea.com/nl/en/p/kallax-shelving-unit-white-10409932/
+      markets:
+        ca: "90637299"
+        us: "90637299"
     size: [1120, 390, 1470]
     keywords: [cube, cubby, bookshelf, expedit, room divider]
     models:
@@ -228,6 +257,9 @@ products:
       size: 147x147 cm
       article: "30275861"
       url: https://www.ikea.com/nl/en/p/kallax-shelving-unit-white-30275861/
+      markets:
+        ca: "10637302"
+        us: "10637302"
     size: [1470, 390, 1470]
     keywords: [cube, cubby, bookshelf, expedit, room divider]
     models:
@@ -255,6 +287,9 @@ products:
       colour: black-brown
       article: "70301542"
       url: https://www.ikea.com/nl/en/p/kallax-shelving-unit-black-brown-70301542/
+      markets:
+        ca: "70301542"
+        us: "70301542"
     size: [1820, 390, 1820]
     keywords: [cube, cubby, bookshelf, expedit, room divider]
     models:
@@ -283,6 +318,9 @@ products:
       colour: white
       article: "60282186"
       url: https://www.ikea.com/nl/en/p/lack-wall-shelf-unit-white-60282186/
+      markets:
+        ca: "60282186"
+        us: "60282186"
     size: [300, 280, 1900]
     keywords: [bookshelf, wall shelf]
     models:
@@ -306,6 +344,9 @@ products:
       colour: white
       article: "00263850"
       url: https://www.ikea.com/nl/en/p/billy-bookcase-white-00263850/
+      markets:
+        ca: "20522046"
+        us: "20522046"
     size: [800, 280, 2020]
     keywords: [bookshelf, shelves]
     models:
@@ -328,6 +369,9 @@ products:
       colour: white stain/light brown
       article: "50413507"
       url: https://www.ikea.com/nl/en/p/hemnes-glass-door-cabinet-with-3-drawers-white-stain-light-brown-50413507/
+      markets:
+        ca: "50413507"
+        us: "50413507"
     size: [900, 370, 1970]
     keywords: [display cabinet, vitrine, bookcase, china cabinet]
     models:
@@ -341,6 +385,53 @@ products:
         placed: measured
         note: Full size, in millimetres.
 
+  hemnes-bookcase-49x197:
+    category: storage-furniture/bookcases-shelving-units
+    ikea: &hemnes-bookcase
+      name: HEMNES
+      type: Bookcase
+      size: 49x197 cm
+      colour: white stain
+      article: "40371763"
+      url: https://www.ikea.com/ca/en/p/hemnes-bookcase-white-stain-40371763/
+      markets:
+        ca: "40371763"
+        us: "40371763"
+    size: [490, 370, 1970]
+    keywords: [bookshelf, shelves, narrow bookcase]
+    models:
+      - site: grabcad
+        model: ikea-hemnes-500-1
+        file: Hemnes 500 .stp
+        title: IKEA Hemnes 500
+        author: Jim Davies
+        placed: as-drawn
+        note: >-
+          Published as an IKEA HEMNES shelf unit 500 wide, the companion of
+          the same designer's 900; taken to be the 49 cm bookcase, the one
+          HEMNES bookcase of that width.
+
+  hemnes-bookcase-90x197:
+    category: storage-furniture/bookcases-shelving-units
+    ikea:
+      <<: *hemnes-bookcase
+      size: 90x197 cm
+      colour: white stain/light brown
+      article: "60413502"
+      url: https://www.ikea.com/gb/en/p/hemnes-bookcase-white-stain-light-brown-60413502/
+      markets:
+        ca: "60413502"
+        us: "60413502"
+    size: [900, 370, 1970]
+    keywords: [bookshelf, shelves]
+    models:
+      - site: grabcad
+        model: ikea-hemnes-900-1
+        file: Hemnes 900.stp
+        title: IKEA Hemnes 900
+        author: Jim Davies
+        placed: as-drawn
+
   # -- Storage furniture / TV & media furniture -------------------------------
 
   kallax-tv-bench-147x60:
@@ -351,6 +442,8 @@ products:
       size: 147x60 cm
       article: "70562087"
       url: https://www.ikea.com/nl/en/p/kallax-tv-bench-white-70562087/
+      markets:
+        ca: "00574885"
     size: [1470, 390, 600]
     keywords: [tv unit, media unit, sideboard]
     models:
@@ -373,6 +466,7 @@ products:
       colour: white
       article: "30498927"
       url: https://www.ikea.com/nl/en/p/lack-tv-bench-white-30498927/
+      markets: {}
     size: [1600, 350, 360]
     keywords: [tv unit, media unit]
     models:
@@ -393,6 +487,7 @@ products:
       size: 120x35x36 cm
       article: "30498890"
       url: https://www.ikea.com/nl/en/p/lack-tv-bench-white-30498890/
+      markets: {}
     size: [1200, 350, 360]
     keywords: [tv unit, media unit]
     models:
@@ -417,6 +512,7 @@ products:
       colour: white
       article: "70458203"
       url: https://www.ikea.com/nl/en/p/pax-wardrobe-frame-white-70458203/
+      markets: {}
     size: [1000, 580, 2010]
     keywords: [wardrobe, closet, armoire]
     models:
@@ -426,6 +522,31 @@ products:
         title: Ikea Pax 100x58x201
         author: Gábor Götz
         placed: as-drawn
+
+  # -- Storage furniture / Trolleys -------------------------------------------
+
+  raskog-trolley-35x45x77:
+    category: storage-furniture/trolleys
+    ikea:
+      name: RÅSKOG
+      type: Trolley
+      size: 35x45x77 cm
+      colour: white
+      article: "30586783"
+      url: https://www.ikea.com/gb/en/p/raskog-trolley-white-30586783/
+      markets:
+        ca: "30586783"
+        us: "30586783"
+    size: [450, 350, 770]
+    keywords: [utility cart, cart, kitchen trolley, serving cart, rolling cart]
+    models:
+      - site: grabcad
+        model: raskog-storage-cart-1
+        file: Raskog V1_Real 1.STEP
+        title: RÅSKOG Storage Cart
+        author: Machine Leung
+        placed: as-drawn
+        note: The larger RÅSKOG, with casters and baskets simplified by its designer.
 
   # -- Beds & mattresses / Beds -----------------------------------------------
 
@@ -438,6 +559,7 @@ products:
       colour: grey stained/Luröy
       article: S69385793
       url: https://www.ikea.com/nl/en/p/malm-bed-frame-high-grey-stained-luroy-s69385793/
+      markets: {}
     size: [1760, 2090, 1000]
     keywords: [double bed, bed frame]
     models:
@@ -465,6 +587,9 @@ products:
       colour: Vissle grey
       article: S79010614
       url: https://www.ikea.com/nl/en/p/klippan-2-seat-sofa-vissle-grey-s79010614/
+      markets:
+        ca: "S29010616"
+        us: "S09010617"
     size: [1800, 880, 660]
     keywords: [couch, loveseat, settee]
     models:
@@ -483,6 +608,7 @@ products:
       colour: Kelinge beige
       article: S49621606
       url: https://www.ikea.com/nl/en/p/soderhamn-3-seat-section-kelinge-beige-s49621606/
+      markets: {}
     size: [1980, 990, 830]
     keywords: [couch, modular sofa, settee]
     models:
@@ -504,6 +630,7 @@ products:
       colour: white
       article: "30449908"
       url: https://www.ikea.com/nl/en/p/lack-side-table-white-30449908/
+      markets: {}
     size: [550, 550, 450]
     keywords: [end table, occasional table, nightstand]
     models:
@@ -536,6 +663,7 @@ products:
       colour: white stained oak effect
       article: "50319029"
       url: https://www.ikea.com/nl/en/p/lack-coffee-table-white-stained-oak-effect-50319029/
+      markets: {}
     size: [900, 550, 450]
     keywords: [low table, living room table]
     models:
@@ -558,6 +686,9 @@ products:
       colour: birch veneer/Knisa light beige
       article: S39240787
       url: https://www.ikea.com/nl/en/p/poang-armchair-birch-veneer-knisa-light-beige-s39240787/
+      markets:
+        ca: "S49306570"
+        us: "S59305928"
     size: [680, 820, 1000]
     keywords: [chair, lounge chair, reading chair, easy chair]
     models:
@@ -579,6 +710,7 @@ products:
       colour: in/outdoor/red
       article: "70581991"
       url: https://www.ikea.com/nl/en/p/mammut-childrens-stool-in-outdoor-red-70581991/
+      markets: {}
     size: [350, 350, 300]
     keywords: [kids stool, child seat]
     models:
@@ -601,6 +733,9 @@ products:
       size: 111x39 cm
       article: "30582445"
       url: https://www.ikea.com/nl/en/p/kallax-desk-white-30582445/
+      markets:
+        ca: "30582445"
+        us: "30582445"
     size: [1110, 390, 770]
     keywords: [writing desk, workstation, table]
     models:
@@ -623,6 +758,9 @@ products:
       colour: white
       article: "80213074"
       url: https://www.ikea.com/nl/en/p/micke-desk-white-80213074/
+      markets:
+        ca: "80213074"
+        us: "80213074"
     size: [1050, 500, 750]
     keywords: [writing desk, workstation, computer desk]
     models:
@@ -642,6 +780,9 @@ products:
       colour: white
       article: S99431982
       url: https://www.ikea.com/nl/en/p/lagkapten-alex-desk-white-s99431982/
+      markets:
+        ca: "S99431982"
+        us: "S99431982"
     size: [1400, 600, 730]
     keywords: [writing desk, workstation, computer desk, drawer unit]
     models:
@@ -663,6 +804,9 @@ products:
       colour: white/white
       article: S59574459
       url: https://www.ikea.com/nl/en/p/trofast-storage-combination-with-boxes-white-white-s59574459/
+      markets:
+        ca: "S59574459"
+        us: "S59574459"
     size: [990, 440, 560]
     keywords: [toy storage, toy box, bins]
     models:
@@ -687,6 +831,9 @@ products:
       colour: white
       article: "00320803"
       url: https://www.ikea.com/nl/en/p/skadis-pegboard-white-00320803/
+      markets:
+        ca: "00320803"
+        us: "00320803"
     size: [560, 5, 560]
     keywords: [pegboard, wall organiser, wall storage]
     models:
@@ -711,6 +858,9 @@ products:
       colour: dark grey
       article: "50355395"
       url: https://www.ikea.com/nl/en/p/tertial-work-lamp-dark-grey-50355395/
+      markets:
+        ca: "20355434"
+        us: "20355434"
     keywords: [desk lamp, task lamp, reading lamp]
     models:
       - site: grabcad

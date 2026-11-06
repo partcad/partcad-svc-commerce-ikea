@@ -1,5 +1,5 @@
 #
-# partcad-repo-ikea, 2026
+# partcad-svc-commerce-ikea, 2026
 #
 # Licensed under Apache License, Version 2.0.
 #
@@ -27,7 +27,7 @@ The plugin's one parameter, 'sources', is which model sites to draw a product
 with, best first: a product is drawn with its model on the first of them that
 has one, and a product none of them has a model of is not served at all - it is
 not listed, found or searched. That is the rule of this package, and the user's
-to narrow: 'printables,makerworld' is only the products that build without a
+to narrow: 'printables makerworld' is only the products that build without a
 sign-in anywhere.
 
 PartCAD runs this script once per key (via runpy) with the key in
@@ -46,7 +46,9 @@ import urllib.parse
 #
 # v1: IKEA products as aliases of models in //pub/collection, by category, each
 #     category supplied by the package's own IKEA store.
-CACHE_VERSION = 1
+# v2: the European, American and Canadian ranges together: three products
+#     IKEA Netherlands does not sell, and the Trolleys category.
+CACHE_VERSION = 2
 
 CATALOG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "catalog.yaml")
 
@@ -59,7 +61,7 @@ SITES = {
     "cults3d": "Cults3D",
 }
 COLLECTION = "//pub/collection/%s/models"
-DEFAULT_SOURCES = "printables,makerworld,grabcad,thingiverse,cults3d"
+DEFAULT_SOURCES = "printables makerworld grabcad thingiverse cults3d"
 
 VENDOR = "ikea"
 WEB = "https://www.ikea.com/nl/en/"
@@ -225,6 +227,9 @@ def haystack(name, product, categories):
     ikea = product.get("ikea") or {}
     texts = [name, product.get("category", "")]
     texts += [ikea.get(k) or "" for k in ("name", "type", "size", "colour", "article")]
+    # The numbers the United States and Canada sell it under, which is what a
+    # user there has in hand.
+    texts += [str(number) for number in (ikea.get("markets") or {}).values()]
     texts += list(product.get("keywords") or [])
     path = product.get("category", "")
     while path:

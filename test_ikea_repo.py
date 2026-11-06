@@ -1,5 +1,5 @@
 #
-# partcad-repo-ikea, 2026
+# partcad-svc-commerce-ikea, 2026
 #
 # Licensed under Apache License, Version 2.0.
 #
@@ -76,7 +76,12 @@ def test_every_product_names_what_ikea_sells_it_as(catalog):
         ikea = product["ikea"]
         assert ikea["name"] and ikea["type"], name
         assert re.fullmatch(r"S?\d{8}", str(ikea["article"])), name
-        assert ikea["url"].startswith("https://www.ikea.com/nl/en/p/"), name
+        # Described as IKEA Netherlands sells it, else Great Britain, else Canada.
+        assert re.match(r"https://www\.ikea\.com/(nl|gb|ca)/en/p/", ikea["url"]), name
+        # Where else it is sold under a number of its own: every product says,
+        # so that none inherits another's ('<<: *kallax').
+        assert set(ikea["markets"]) <= {"us", "ca"}, name
+        assert all(re.fullmatch(r"S?[0-9]{8}", number) for number in ikea["markets"].values()), name
         assert ikea["url"].rstrip("/").lower().endswith(str(ikea["article"]).lower()), name
         # The product's name says what it is, the way the others' do.
         assert re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", name), name
@@ -113,6 +118,7 @@ def test_a_category_lists_the_categories_under_it_by_their_last_name(catalog):
         "bookcases-shelving-units",
         "tv-media-furniture",
         "storage-solution-systems",
+        "trolleys",
     ]
     assert plugin.get("storage-furniture/bookcases-shelving-units/deps") == []
 
@@ -176,7 +182,7 @@ def test_sources_choose_the_model_a_product_is_drawn_with(catalog):
 
 
 def test_a_product_none_of_the_sources_has_is_not_served(catalog):
-    plugin = served({"parameters": {"sources": "printables,makerworld"}}, catalog)
+    plugin = served({"parameters": {"sources": "printables makerworld"}}, catalog)
     assert "sofas-armchairs-footstools" not in plugin.get("deps")
     assert "lighting" not in plugin.get("deps")
     assert plugin.get("sofas-armchairs-footstools/sofas/objects/part") == {}
@@ -260,3 +266,10 @@ def test_cache_version_is_a_plain_integer_constant():
     """PartCAD reads it out of the script without running it, so it must stay a literal."""
     source = open(os.path.join(HERE, "ikea_repo.py"), encoding="utf-8").read()
     assert re.search(r"^CACHE_VERSION = \d+$", source, re.MULTILINE)
+
+
+def test_an_american_or_canadian_article_number_finds_its_product(catalog):
+    # KALLAX 77x147 cm: 802.758.87 in Europe, 206.316.63 in North America.
+    product = catalog["products"]["kallax-shelving-unit-77x147"]
+    assert product["ikea"]["markets"] == {"us": "20631663", "ca": "20631663"}
+    assert ikea_repo.score("206.316.63", "kallax-shelving-unit-77x147", product, catalog["categories"]) > 0

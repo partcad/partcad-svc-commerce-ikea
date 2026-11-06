@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# partcad-repo-ikea, 2026
+# partcad-svc-commerce-ikea, 2026
 #
 # Licensed under Apache License, Version 2.0.
 #

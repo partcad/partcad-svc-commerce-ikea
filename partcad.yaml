@@ -1,9 +1,10 @@
 # PartCAD package: IKEA, as a store and as a catalog of its products.
 #
 # Published as //pub/svc/commerce/ikea, with the other stores. Its provider
-# 'ikea-store' quotes IKEA articles at one IKEA store. Its external dependency
-# 'products' is the catalog (//pub/svc/commerce/ikea/products), whose child
-# packages - served by the ikea_repo plugin - are IKEA's own categories. Every
+# 'ikea-store' quotes IKEA articles at the IKEA store nearest the user. Its
+# external dependency 'products' is the catalog
+# (//pub/svc/commerce/ikea/products), whose child packages - served by the
+# ikea_repo plugin - are IKEA's own categories. Every
 # product in them is a part of type 'alias' of a model of it in one of the
 # model-site collections, //pub/collection/<site>; a product no collection has
 # a model of is not here. See the README.
@@ -50,6 +51,7 @@ docs:
     pc supply quote //pub/svc/commerce/ikea/products/tables-chairs/armchairs:poang-armchair#2
     pc --extra-param //pub/svc/commerce/ikea:ikea-store.store=Utrecht \
       supply quote //pub/svc/commerce/ikea/products/tables-chairs/armchairs:poang-armchair#2
+    pc supply quote //pub/svc/commerce/ikea:studio
     ```
 
 dependencies:
@@ -78,48 +80,33 @@ providers:
   ikea-store:
     type: store
     path: ikea_store.py
-    desc: Prices and stock of IKEA articles at one IKEA store, read from ikea.com
-    # Yours to change without touching this package, in ~/.partcad/config.yaml,
-    # by the provider's name:
+    desc: Prices and stock of IKEA articles at the IKEA store nearest you, read from ikea.com
+    # Where you are is PartCAD's to say, not this provider's: it is handed your
+    # country, the state and city of your address, your language and your
+    # currency (PartCAD's 'country', 'language', 'currency' and 'user'
+    # options), and asks the stores of that country - in your language where
+    # ikea.com has the site in it, else English - and quotes in their currency.
+    #
+    # Which store is the one parameter here, and it is unset: the provider
+    # takes the store of your city, else asks PartCAD which of your state's (or
+    # country's) stores is nearest your location or address. Set it, if you
+    # want another, in ~/.partcad/config.yaml, by the provider's name:
     #
     #   parameters:
     #     //pub/svc/commerce/ikea:ikea-store:
     #       store: Utrecht
     #
     # or for one command, with 'pc --extra-param
-    # //pub/svc/commerce/ikea:ikea-store.store=Utrecht', or with an 'enrich' of
-    # it in a package of your own:
-    #
-    #   providers:
-    #     ikea-berlin:
-    #       type: enrich
-    #       source: //pub/svc/commerce/ikea:ikea-store
-    #       with: {country: de, language: de, store: "324"}
+    # //pub/svc/commerce/ikea:ikea-store.store=Utrecht'.
     parameters:
-      country:
-        type: string
-        default: nl
-        desc: >-
-          The country of the store, as ikea.com spells it in its addresses
-          (ikea.com/<country>/<language>/): it decides the stores there are,
-          the prices and their currency. A country that sells an article under
-          another number than the catalog's - the United States and Canada -
-          does not find it.
-      language:
-        type: string
-        default: en
-        desc: The language of the site the store is asked through; it changes the names of things, not their prices.
       store:
         type: string
-        default: "088"
         desc: >-
-          The store: its number on ikea.com ('088' is IKEA Amsterdam) or a
-          word of its name ('Utrecht'). A name that is not one store's is
-          answered with the stores there are.
-      currency:
-        type: string
-        default: EUR
-        desc: What the store's country prices in, which is what PartCAD takes the quotes to be in.
+          The store to quote at, by its number on ikea.com ('088' is IKEA
+          Amsterdam) or a word of its name ('Utrecht'), in your country. Unset,
+          the store of your city, else the nearest of your state's or
+          country's. A name that is not one store's is answered with the
+          stores there are.
 
 repositories:
   ikea_repo:
@@ -131,19 +118,19 @@ repositories:
     #
     #   parameters:
     #     //pub/svc/commerce/ikea:ikea_repo:
-    #       sources: printables,makerworld
+    #       sources: printables makerworld
     #
     # or with an 'enrich' of it in a package of your own (see the README).
     parameters:
       sources:
         type: string
-        default: printables,makerworld,grabcad,thingiverse,cults3d
+        default: printables makerworld grabcad thingiverse cults3d
         desc: >-
           The model-site collections to draw a product with, best first,
-          separated by commas: printables, makerworld, grabcad, thingiverse,
-          cults3d. A product is drawn with its model on the first of them that
+          separated by spaces (a parameter's value may not hold a comma):
+          printables, makerworld, grabcad, thingiverse, cults3d. A product is drawn with its model on the first of them that
           has one, and a product none of them has a model of is not served.
-          'printables,makerworld' is the products that build without signing
+          'printables makerworld' is the products that build without signing
           in anywhere; a GrabCAD model needs 'pc login
           //pub/collection/grabcad:grabcad_repo'.
 
